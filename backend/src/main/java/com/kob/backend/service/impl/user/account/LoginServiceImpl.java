@@ -25,6 +25,7 @@ public class LoginServiceImpl implements LoginService {
         Authentication authenticate = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
         UserDetailsImpl principal = (UserDetailsImpl) authenticate.getPrincipal();
         User user = principal.getUser();
+
         String jwt = JwtUtil.createJWT(user.getId().toString());
         Map<String, String> map = new HashMap<>();
         map.put("error_message", "success");
