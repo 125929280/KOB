@@ -24,7 +24,7 @@ public class UpdateServiceImpl implements UpdateService {
         UserDetailsImpl principal = (UserDetailsImpl) authentication.getPrincipal();
         User user = principal.getUser();
 
-        Integer bot_id = Integer.parseInt(data.get("bot_id"));
+        Integer botId = Integer.parseInt(data.get("bot_id"));
         String title = data.get("title");
         String description = data.get("description");
         String content = data.get("content");
@@ -54,7 +54,7 @@ public class UpdateServiceImpl implements UpdateService {
             return map;
         }
 
-        Bot bot = botMapper.selectById(bot_id);
+        Bot bot = botMapper.selectById(botId);
         if(bot == null) {
             map.put("error_message", "Bot不存在或已被删除");
             return map;

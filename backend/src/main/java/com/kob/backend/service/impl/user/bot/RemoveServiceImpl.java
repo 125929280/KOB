@@ -24,8 +24,8 @@ public class RemoveServiceImpl implements RemoveService {
         UserDetailsImpl principal = (UserDetailsImpl) authentication.getPrincipal();
         User user = principal.getUser();
 
-        Integer bot_id = Integer.parseInt(data.get("bot_id"));
-        Bot bot = botMapper.selectById(bot_id);
+        Integer botId = Integer.parseInt(data.get("bot_id"));
+        Bot bot = botMapper.selectById(botId);
 
         Map<String, String> map = new HashMap<>();
         if (bot == null) {
@@ -37,7 +37,7 @@ public class RemoveServiceImpl implements RemoveService {
             return map;
         }
 
-        botMapper.deleteById(bot_id);
+        botMapper.deleteById(botId);
         map.put("error_message", "success");
         return map;
     }
