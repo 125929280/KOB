@@ -59,7 +59,6 @@ public class MatchingPool extends Thread {
     }
 
     private void sendResult(Player a, Player b) {
-        System.out.println("send result : " + a + " " + b);
         MultiValueMap<String, String> data = new LinkedMultiValueMap<>();
         data.add("a_id", a.getUserId().toString());
         data.add("b_id", b.getUserId().toString());
@@ -67,7 +66,6 @@ public class MatchingPool extends Thread {
     }
 
     private void matchPlayers() {
-        System.out.println("match players : " + players.toString());
         boolean[] used = new boolean[players.size()];
         for (int i = 0; i < players.size(); i++) {
             if (used[i]) continue;
