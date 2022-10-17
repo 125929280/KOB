@@ -12,14 +12,15 @@ import java.util.List;
 @NoArgsConstructor
 public class Player {
     private Integer id;
+    private Integer botId;
+    private String botCode;
     private Integer sx;
     private Integer sy;
     private List<Integer> steps;
 
     private boolean check_tail_increasing(int step) {
         if (step <= 10) return true;
-        if (step % 3 == 1) return true;
-        return false;
+        return step % 3 == 1;
     }
 
     public List<Cell> getCells() {

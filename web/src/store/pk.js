@@ -12,7 +12,7 @@ export default {
     b_sx: 0,
     b_sy: 0,
     gameObject: null,
-    loser: "NONE", // NONE ALL A B
+    loser: "none", // none all a b
   },
   getters: {},
   mutations: {

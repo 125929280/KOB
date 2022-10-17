@@ -1,13 +1,13 @@
 <template>
   <div class="result-board">
-    <div class="result-board-text" v-if="$store.state.pk.loser === 'ALL'">
+    <div class="result-board-text" v-if="$store.state.pk.loser === 'all'">
       Draw
     </div>
     <div
       class="result-board-text"
       v-else-if="
-        $store.state.pk.loser == 'A' &&
-        $store.state.pk.a_id == $store.state.user.id
+        $store.state.pk.loser === 'a' &&
+        $store.state.pk.a_id == parseInt($store.state.user.id)
         // 不能用=== 因为类型不一样
       "
     >
@@ -16,8 +16,8 @@
     <div
       class="result-board-text"
       v-else-if="
-        $store.state.pk.loser == 'B' &&
-        $store.state.pk.b_id == $store.state.user.id
+        $store.state.pk.loser === 'b' &&
+        $store.state.pk.b_id === parseInt($store.state.user.id)
       "
     >
       Lose
@@ -39,7 +39,7 @@ export default {
 
     const restart = () => {
       store.commit("updateStatus", "matching");
-      store.commit("updateLoser", "NONE");
+      store.commit("updateLoser", "none");
       store.commit("updateOpponent", {
         username: "我的对手",
         photo:

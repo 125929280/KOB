@@ -1,7 +1,7 @@
 <template>
   <PlayGround v-if="$store.state.pk.status === 'playing'">对战</PlayGround>
   <MatchGround v-if="$store.state.pk.status === 'matching'">匹配</MatchGround>
-  <ResultBoard v-if="$store.state.pk.loser != 'NONE'"></ResultBoard>
+  <ResultBoard v-if="$store.state.pk.loser != 'none'"></ResultBoard>
 </template>
 <script>
 import PlayGround from "../../components/PlayGround.vue";
@@ -19,6 +19,8 @@ export default {
   setup() {
     const store = useStore();
     const socketUrl = `ws://127.0.0.1:3000/websocket/${store.state.user.token}/`;
+
+    store.commit("updateLoser", "none");
 
     let socket = null;
     onMounted(() => {
@@ -57,10 +59,10 @@ export default {
           console.log(data);
           const game = store.state.pk.gameObject;
           const [snake0, snake1] = game.snakes;
-          if (data.loser === "ALL" || data.loser === "A") {
+          if (data.loser === "all" || data.loser === "a") {
             snake0.status = "die";
           }
-          if (data.loser === "ALL" || data.loser === "B") {
+          if (data.loser === "all" || data.loser === "b") {
             snake1.status = "die";
           }
           store.commit("updateLoser", data.loser);
