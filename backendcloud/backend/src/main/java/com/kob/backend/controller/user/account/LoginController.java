@@ -28,33 +28,34 @@ public class LoginController {
     @PostMapping("/user/account/token/")
     public Map<String, String> getToken(@RequestParam Map<String, String> map) {
         map.put("actualVerificationCode", verificationCode);
-        System.out.println(map.get("actualVerificationCode"));
+//        System.out.println((String) request.getSession().getAttribute("verificationCode"));
         return loginService.getToken(map);
     }
 
     @GetMapping("/user/account/getVerificationCode")
-    public void getVerificationCode(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws Exception {
+    public void getVerificationCode(HttpServletRequest request, HttpServletResponse response) throws Exception {
         byte[] captchaOutputStream = null;
         ByteArrayOutputStream imgOutputStream = new ByteArrayOutputStream();
         try {
             //生成验证码字符串并保存到session中
             String code = defaultKaptcha.createText();
-            httpServletRequest.getSession().setAttribute("verificationCode", code);
+            request.getSession().setAttribute("verificationCode", code);
+            System.out.println((String) request.getSession().getAttribute("verificationCode"));
 
             System.out.println(code);
             this.setVerificationCode(code);
             BufferedImage challenge = defaultKaptcha.createImage(verificationCode);
             ImageIO.write(challenge, "jpg", imgOutputStream);
         } catch (IllegalArgumentException e) {
-            httpServletResponse.sendError(HttpServletResponse.SC_NOT_FOUND);
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
         captchaOutputStream = imgOutputStream.toByteArray();
-        httpServletResponse.setHeader("Cache-Control", "no-store");
-        httpServletResponse.setHeader("Pragma", "no-cache");
-        httpServletResponse.setDateHeader("Expires", 0);
-        httpServletResponse.setContentType("image/jpeg");
-        ServletOutputStream responseOutputStream = httpServletResponse.getOutputStream();
+        response.setHeader("Cache-Control", "no-store");
+        response.setHeader("Pragma", "no-cache");
+        response.setDateHeader("Expires", 0);
+        response.setContentType("image/jpeg");
+        ServletOutputStream responseOutputStream = response.getOutputStream();
         responseOutputStream.write(captchaOutputStream);
         responseOutputStream.flush();
     }
