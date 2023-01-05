@@ -20,14 +20,27 @@ public class LoginServiceImpl implements LoginService {
     private AuthenticationManager authenticationManager;
 
     @Override
-    public Map<String, String> getToken(String username, String password) {
+    public Map<String, String> getToken(Map<String, String> data) {
+        String username = data.get("username");
+        String password = data.get("password");
+        String actualVerificationCode = data.get("actualVerificationCode");
+        String verificationCode = data.get("verificationCode");
+        System.out.println(username + " " + password + " " + actualVerificationCode + " " + verificationCode);
+        Map<String, String> map = new HashMap<>();
+        if(verificationCode == null || verificationCode.length() == 0) {
+            map.put("error_message", "验证码不能为空");
+            return map;
+        }
+        if(!actualVerificationCode.equals(verificationCode.toUpperCase())) {
+            map.put("error_message", "验证码错误");
+            return map;
+        }
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(username, password);
         Authentication authenticate = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
         UserDetailsImpl principal = (UserDetailsImpl) authenticate.getPrincipal();
         User user = principal.getUser();
 
         String jwt = JwtUtil.createJWT(user.getId().toString());
-        Map<String, String> map = new HashMap<>();
         map.put("error_message", "success");
         map.put("token", jwt);
         return map;

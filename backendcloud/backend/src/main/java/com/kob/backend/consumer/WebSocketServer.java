@@ -67,7 +67,7 @@ public class WebSocketServer {
     public void onOpen(Session session, @PathParam("token") String token) throws IOException {
         // 建立连接
         this.session = session;
-        System.out.println("connected!");
+//        System.out.println("connected!");
         Integer userId = JwtAuthentication.getUserId(token);
         this.user = userMapper.selectById(userId);
         if (this.user != null) {
@@ -75,13 +75,13 @@ public class WebSocketServer {
         } else {
             this.session.close();
         }
-        System.out.println(users);
+//        System.out.println(users);
     }
 
     @OnClose
     public void onClose() {
         // 关闭链接
-        System.out.println("disconnected!");
+//        System.out.println("disconnected!");
         if (this.user != null) {
             users.remove(this.user.getId());
         }

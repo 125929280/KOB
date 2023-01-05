@@ -23,8 +23,26 @@
               placeholder="请输入密码"
             />
           </div>
+          <div class="mb-3">
+            <label for="verificationCode" class="form-label">验证码</label>
+            <input
+              v-model="verificationCode"
+              type="text"
+              class="form-control"
+              id="verificationCode"
+              placeholder="请输入验证码"
+            />
+            <div>
+              <img
+                :src="imgUrl"
+                alt="点击刷新"
+                class="picture"
+                @click="refresh($event)"
+              />
+            </div>
+          </div>
           <div class="error-message">{{ error_message }}</div>
-          <button type="submit" class="btn btn-primary">提交</button>
+          <button type="submit" class="btn btn-primary">登录</button>
         </form>
       </div>
     </div>
@@ -41,8 +59,12 @@ export default {
   },
   setup() {
     const store = useStore();
+    const imgUrl = ref(
+      "http://localhost:3000/user/account/getVerificationCode"
+    );
     let username = ref("");
     let password = ref("");
+    let verificationCode = ref("");
     let error_message = ref("");
 
     const jwt_token = localStorage.getItem("jwt_token");
@@ -66,6 +88,7 @@ export default {
       store.dispatch("login", {
         username: username.value,
         password: password.value,
+        verificationCode: verificationCode.value,
         success() {
           store.dispatch("getInfo", {
             success() {
@@ -73,17 +96,25 @@ export default {
             },
           });
         },
-        error() {
-          error_message.value = "用户名或密码错误";
+        error(resp) {
+          error_message.value = resp.error_message;
         },
       });
+    };
+
+    const refresh = (event) => {
+      event.target.src = `${imgUrl.value}?t=${new Date().getTime()}`;
+      console.log(event.target.src);
     };
 
     return {
       username,
       password,
+      verificationCode,
       error_message,
+      imgUrl,
       login,
+      refresh,
     };
   },
 };

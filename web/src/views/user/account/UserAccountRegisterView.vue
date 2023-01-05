@@ -33,8 +33,36 @@
               placeholder="请再次输入密码"
             />
           </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">邮箱</label>
+            <input
+              v-model="email"
+              type="text"
+              class="form-control"
+              id="email"
+              placeholder="请输入邮箱"
+            />
+            &nbsp;
+            <button
+              @click="send_activation_code()"
+              type="button"
+              class="btn btn-success"
+            >
+              发送验证码
+            </button>
+          </div>
+          <div class="mb-3">
+            <label for="activationCode" class="form-label">验证码</label>
+            <input
+              v-model="activationCode"
+              type="text"
+              class="form-control"
+              id="activationCode"
+              placeholder="请输入验证码"
+            />
+          </div>
           <div class="error-message">{{ error_message }}</div>
-          <button type="submit" class="btn btn-primary">提交</button>
+          <button type="submit" class="btn btn-primary">注册</button>
         </form>
       </div>
     </div></ContentField
@@ -55,15 +83,19 @@ export default {
     let password = ref("");
     let confirmedPassword = ref("");
     let error_message = ref("");
+    let email = ref("");
+    let activationCode = ref("");
 
     const register = () => {
       $.ajax({
-        url: "https://app3765.acapp.acwing.com.cn/api/user/account/register/",
+        url: "http://127.0.0.1:3000/user/account/register/",
         type: "post",
         data: {
           username: username.value,
           password: password.value,
           confirmedPassword: confirmedPassword.value,
+          email: email.value,
+          activationCode: activationCode.value,
         },
         success(resp) {
           if (resp.error_message === "success") {
@@ -75,12 +107,26 @@ export default {
       });
     };
 
+    const send_activation_code = () => {
+      $.ajax({
+        url: "http://127.0.0.1:3000/user/account/sendActivationCode/",
+        type: "post",
+        data: {
+          username: username.value,
+          email: email.value,
+        },
+      });
+    };
+
     return {
       username,
       password,
       confirmedPassword,
+      email,
+      activationCode,
       error_message,
       register,
+      send_activation_code,
     };
   },
 };
