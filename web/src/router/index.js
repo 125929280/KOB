@@ -72,7 +72,7 @@ const routes = [
     name: "discuss_index",
     component: DiscussIndexView,
     meta: {
-      requestAuth: false,
+      requestAuth: true,
     },
   },
   {
