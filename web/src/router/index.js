@@ -7,6 +7,7 @@ import UserBotIndexView from "../views/user/bot//UserBotIndexView";
 import NotFoundIndexView from "../views/error/NotFoundIndexView";
 import UserAccountRegisterView from "../views/user/account/UserAccountRegisterView";
 import UserAccountLoginView from "../views/user/account/UserAccountLoginView";
+import DiscussIndexView from "../views/discuss/DiscussIndexView";
 import store from "../store";
 
 const routes = [
@@ -62,6 +63,14 @@ const routes = [
     path: "/user/account/register/",
     name: "user_account_register",
     component: UserAccountRegisterView,
+    meta: {
+      requestAuth: false,
+    },
+  },
+  {
+    path: "/discuss/",
+    name: "discuss_index",
+    component: DiscussIndexView,
     meta: {
       requestAuth: false,
     },
