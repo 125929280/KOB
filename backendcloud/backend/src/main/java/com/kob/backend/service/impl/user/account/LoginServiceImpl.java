@@ -1,5 +1,6 @@
 package com.kob.backend.service.impl.user.account;
 
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.kob.backend.pojo.User;
 import com.kob.backend.service.impl.utils.UserDetailsImpl;
 import com.kob.backend.service.user.account.LoginService;
@@ -27,22 +28,23 @@ public class LoginServiceImpl implements LoginService {
         String verificationCode = data.get("verificationCode");
         System.out.println(username + " " + password + " " + actualVerificationCode + " " + verificationCode);
         Map<String, String> map = new HashMap<>();
-        if(verificationCode == null || verificationCode.length() == 0) {
-            map.put("error_message", "验证码不能为空");
-            return map;
-        }
-        if(!actualVerificationCode.equals(verificationCode.toUpperCase())) {
+        if (StringUtils.isBlank(verificationCode) || !actualVerificationCode.equalsIgnoreCase(verificationCode)) {
             map.put("error_message", "验证码错误");
             return map;
         }
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(username, password);
-        Authentication authenticate = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
-        UserDetailsImpl principal = (UserDetailsImpl) authenticate.getPrincipal();
-        User user = principal.getUser();
+        try {
+            Authentication authenticate = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
+            UserDetailsImpl principal = (UserDetailsImpl) authenticate.getPrincipal();
+            User user = principal.getUser();
 
-        String jwt = JwtUtil.createJWT(user.getId().toString());
+            String jwt = JwtUtil.createJWT(user.getId().toString());
+            map.put("token", jwt);
+        } catch (Exception e) {
+            map.put("error_message", "账户名密码错误");
+            return map;
+        }
         map.put("error_message", "success");
-        map.put("token", jwt);
         return map;
     }
 }
