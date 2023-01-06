@@ -34,8 +34,8 @@ public class LoginController {
 
     // TODO:实现注销接口，删除redis中的用户信息
     @PostMapping("/user/account/logout/")
-    public Map<String, String> logout(@RequestParam Map<String, String> map) {
-        return null;
+    public Map<String, String> logout() {
+        return loginService.logout();
     }
 
     @GetMapping("/user/account/getVerificationCode")

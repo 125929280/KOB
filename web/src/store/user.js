@@ -79,6 +79,13 @@ export default {
       });
     },
     logout(context) {
+      $.ajax({
+        url: "http://127.0.0.1:3000/user/account/logout/",
+        type: "post",
+        headers: {
+          Authorization: "Bearer " + context.state.token,
+        },
+      });
       localStorage.removeItem("jwt_token");
       context.commit("logout");
     },

@@ -10,6 +10,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -49,16 +50,28 @@ public class LoginServiceImpl implements LoginService {
         try {
             Authentication authenticate = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
             UserDetailsImpl principal = (UserDetailsImpl) authenticate.getPrincipal();
-            User user = principal.getUser();
+            String userId = principal.getUser().getId().toString();
 
-            String jwt = JwtUtil.createJWT(user.getId().toString());
+            String jwt = JwtUtil.createJWT(userId);
             map.put("token", jwt);
 
-            redisTemplate.opsForValue().set("login:" + user.getId().toString(), principal);
+            redisTemplate.opsForValue().set("login:" + userId, principal);
         } catch (Exception e) {
             map.put("error_message", "账户名密码错误");
             return map;
         }
+        map.put("error_message", "success");
+        return map;
+    }
+
+    @Override
+    public Map<String, String> logout() {
+        Map<String, String> map = new HashMap<>();
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        UserDetailsImpl principal = (UserDetailsImpl) usernamePasswordAuthenticationToken.getPrincipal();
+        String userId = principal.getUser().getId().toString();
+
+        redisTemplate.delete("login:" + userId);
         map.put("error_message", "success");
         return map;
     }
