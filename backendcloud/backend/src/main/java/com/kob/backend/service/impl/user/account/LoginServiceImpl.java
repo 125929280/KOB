@@ -6,6 +6,7 @@ import com.kob.backend.service.impl.utils.UserDetailsImpl;
 import com.kob.backend.service.user.account.LoginService;
 import com.kob.backend.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,6 +21,18 @@ public class LoginServiceImpl implements LoginService {
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+
+    /**
+     * 使用authenticationManager.authenticate()进行用户认证
+     * 如果认证失败，给出相应提示
+     * 如果认证成功，使用userId生成jwt并返回
+     * 将完成的用户信息存入redis，[userId, info]
+     *
+     * @param data
+     * @return
+     */
     @Override
     public Map<String, String> getToken(Map<String, String> data) {
         String username = data.get("username");
@@ -40,6 +53,8 @@ public class LoginServiceImpl implements LoginService {
 
             String jwt = JwtUtil.createJWT(user.getId().toString());
             map.put("token", jwt);
+
+            redisTemplate.opsForValue().set("login:" + user.getId().toString(), principal);
         } catch (Exception e) {
             map.put("error_message", "账户名密码错误");
             return map;

@@ -83,7 +83,7 @@ public class RegisterServiceImpl implements RegisterService {
             map.put("error_message", "两次输入的密码不一致");
             return map;
         }
-        if(!activationCode.equals(code)) {
+        if (!activationCode.equals(code)) {
             map.put("error_message", "验证码错误");
             return map;
         }

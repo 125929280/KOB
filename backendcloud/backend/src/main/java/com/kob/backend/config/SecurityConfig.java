@@ -21,6 +21,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter;
 
+    /**
+     * 把BCryptPasswordEncoder()注入Spring容器，替换默认的PasswordEncoder
+     *
+     * @return
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -34,15 +39,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable()
+        http
+                // 关闭csrf
+                .csrf().disable()
+                // 不通过Session获取SecurityContext
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
+                // 对登陆前的接口放行
                 .antMatchers("/user/account/token/", "/user/account/register/", "/user/account/sendActivationCode/", "/user/account/getVerificationCode").permitAll()
                 .antMatchers("/pk/start/game/", "/pk/receive/bot/move/").hasIpAddress("127.0.0.1")
                 .antMatchers(HttpMethod.OPTIONS).permitAll()
+                // 除上面外的所有请求都需要鉴权认证
                 .anyRequest().authenticated();
 
+        // 将jwtAuthenticationTokenFilter配置在UsernamePasswordAuthenticationFilter前
         http.addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
     }
 

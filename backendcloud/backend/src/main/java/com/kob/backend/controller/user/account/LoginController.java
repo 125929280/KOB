@@ -32,6 +32,12 @@ public class LoginController {
         return loginService.getToken(map);
     }
 
+    // TODO:实现注销接口，删除redis中的用户信息
+    @PostMapping("/user/account/logout/")
+    public Map<String, String> logout(@RequestParam Map<String, String> map) {
+        return null;
+    }
+
     @GetMapping("/user/account/getVerificationCode")
     public void getVerificationCode(HttpServletRequest request, HttpServletResponse response) throws Exception {
         byte[] captchaOutputStream = null;
