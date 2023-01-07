@@ -1,7 +1,7 @@
 package com.kob.backend.service.impl.user.account;
 
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
-import com.kob.backend.pojo.User;
+import com.google.code.kaptcha.impl.DefaultKaptcha;
 import com.kob.backend.service.impl.utils.UserDetailsImpl;
 import com.kob.backend.service.user.account.LoginService;
 import com.kob.backend.utils.JwtUtil;
@@ -13,6 +13,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import javax.imageio.ImageIO;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,6 +31,9 @@ public class LoginServiceImpl implements LoginService {
 
     @Autowired
     private RedisTemplate redisTemplate;
+
+    @Autowired
+    private DefaultKaptcha defaultKaptcha;
 
     /**
      * 使用authenticationManager.authenticate()进行用户认证
@@ -38,7 +48,7 @@ public class LoginServiceImpl implements LoginService {
     public Map<String, String> getToken(Map<String, String> data) {
         String username = data.get("username");
         String password = data.get("password");
-        String actualVerificationCode = data.get("actualVerificationCode");
+        String actualVerificationCode = (String) redisTemplate.opsForValue().get("verificationCode");
         String verificationCode = data.get("verificationCode");
         System.out.println(username + " " + password + " " + actualVerificationCode + " " + verificationCode);
         Map<String, String> map = new HashMap<>();
@@ -62,6 +72,30 @@ public class LoginServiceImpl implements LoginService {
         }
         map.put("error_message", "success");
         return map;
+    }
+
+    @Override
+    public void getVerificationCode(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        byte[] captchaOutputStream = null;
+        ByteArrayOutputStream imgOutputStream = new ByteArrayOutputStream();
+        try {
+            // 生成验证码字符串并保存到redis中
+            String code = defaultKaptcha.createText();
+            redisTemplate.opsForValue().set("verificationCode", code);
+            BufferedImage challenge = defaultKaptcha.createImage(code);
+            ImageIO.write(challenge, "jpg", imgOutputStream);
+        } catch (IllegalArgumentException | IOException e) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+        captchaOutputStream = imgOutputStream.toByteArray();
+        response.setHeader("Cache-Control", "no-store");
+        response.setHeader("Pragma", "no-cache");
+        response.setDateHeader("Expires", 0);
+        response.setContentType("image/jpeg");
+        ServletOutputStream responseOutputStream = response.getOutputStream();
+        responseOutputStream.write(captchaOutputStream);
+        responseOutputStream.flush();
     }
 
     @Override

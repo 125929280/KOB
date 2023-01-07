@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Map;
 
 @RestController
@@ -23,46 +24,19 @@ public class LoginController {
     @Autowired
     private DefaultKaptcha defaultKaptcha;
 
-    private String verificationCode;
 
     @PostMapping("/user/account/token/")
     public Map<String, String> getToken(@RequestParam Map<String, String> map) {
-        map.put("actualVerificationCode", verificationCode);
-//        System.out.println((String) request.getSession().getAttribute("verificationCode"));
         return loginService.getToken(map);
     }
 
-    // TODO:实现注销接口，删除redis中的用户信息
     @PostMapping("/user/account/logout/")
     public Map<String, String> logout() {
         return loginService.logout();
     }
 
     @GetMapping("/user/account/getVerificationCode")
-    public void getVerificationCode(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        byte[] captchaOutputStream = null;
-        ByteArrayOutputStream imgOutputStream = new ByteArrayOutputStream();
-        try {
-            //生成验证码字符串并保存到session中
-            String code = defaultKaptcha.createText();
-            request.getSession().setAttribute("verificationCode", code);
-            System.out.println((String) request.getSession().getAttribute("verificationCode"));
-
-            System.out.println(code);
-            this.setVerificationCode(code);
-            BufferedImage challenge = defaultKaptcha.createImage(verificationCode);
-            ImageIO.write(challenge, "jpg", imgOutputStream);
-        } catch (IllegalArgumentException e) {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND);
-            return;
-        }
-        captchaOutputStream = imgOutputStream.toByteArray();
-        response.setHeader("Cache-Control", "no-store");
-        response.setHeader("Pragma", "no-cache");
-        response.setDateHeader("Expires", 0);
-        response.setContentType("image/jpeg");
-        ServletOutputStream responseOutputStream = response.getOutputStream();
-        responseOutputStream.write(captchaOutputStream);
-        responseOutputStream.flush();
+    public void getVerificationCode(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        loginService.getVerificationCode(request, response);
     }
 }
