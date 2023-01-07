@@ -30,13 +30,13 @@ public class LoginController {
         return loginService.getToken(map);
     }
 
-    @PostMapping("/user/account/logout/")
-    public Map<String, String> logout() {
-        return loginService.logout();
-    }
-
     @GetMapping("/user/account/getVerificationCode")
     public void getVerificationCode(HttpServletRequest request, HttpServletResponse response) throws IOException {
         loginService.getVerificationCode(request, response);
+    }
+
+    @PostMapping("/user/account/logout/")
+    public Map<String, String> logout() {
+        return loginService.logout();
     }
 }
