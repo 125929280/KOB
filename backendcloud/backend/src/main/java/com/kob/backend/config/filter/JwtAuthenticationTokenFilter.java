@@ -19,6 +19,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Objects;
 
 @Component
 public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
@@ -60,6 +61,9 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         }
 
         UserDetailsImpl loginUser = (UserDetailsImpl) redisTemplate.opsForValue().get("login:" + userid);
+        if (Objects.isNull(loginUser)) {
+            throw new RuntimeException("用户未登录");
+        }
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(loginUser, null, null);
 
