@@ -8,7 +8,9 @@ import java.util.Map;
 public interface LoginService {
     Map<String, String> getToken(Map<String, String> data);
 
-    void getVerificationCode(HttpServletRequest request, HttpServletResponse response) throws IOException;
+    void getVerificationCode(HttpServletRequest request,
+                             HttpServletResponse response,
+                             String username) throws IOException;
 
     Map<String, String> logout();
 }

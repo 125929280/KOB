@@ -49,7 +49,8 @@ public class LoginServiceImpl implements LoginService {
     public Map<String, String> getToken(Map<String, String> data) {
         String username = data.get("username");
         String password = data.get("password");
-        String actualVerificationCode = (String) redisTemplate.opsForValue().get("verificationCode");
+        System.out.println(username + "verificationCode");
+        String actualVerificationCode = (String) redisTemplate.opsForValue().get(username + "verificationCode");
         String verificationCode = data.get("verificationCode");
         System.out.println(username + " " + password + " " + actualVerificationCode + " " + verificationCode);
         Map<String, String> map = new HashMap<>();
@@ -59,7 +60,7 @@ public class LoginServiceImpl implements LoginService {
         }
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(username, password);
         Authentication authenticate = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
-        if(Objects.isNull(authenticate)) {
+        if (Objects.isNull(authenticate)) {
             throw new RuntimeException("用户名密码错误");
         }
         UserDetailsImpl principal = (UserDetailsImpl) authenticate.getPrincipal();
@@ -69,32 +70,22 @@ public class LoginServiceImpl implements LoginService {
         map.put("token", jwt);
 
         redisTemplate.opsForValue().set("login:" + userId, principal);
-//        try {
-//            Authentication authenticate = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
-//            UserDetailsImpl principal = (UserDetailsImpl) authenticate.getPrincipal();
-//            String userId = principal.getUser().getId().toString();
-//
-//            String jwt = JwtUtil.createJWT(userId);
-//            map.put("token", jwt);
-//
-//            redisTemplate.opsForValue().set("login:" + userId, principal);
-//        } catch (Exception e) {
-//            map.put("error_message", "账户名密码错误");
-//            return map;
-//        }
         map.put("error_message", "success");
         return map;
     }
 
     @Override
-    public void getVerificationCode(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void getVerificationCode(HttpServletRequest request,
+                             HttpServletResponse response,
+                             String username) throws IOException {
         byte[] captchaOutputStream = null;
         ByteArrayOutputStream imgOutputStream = new ByteArrayOutputStream();
         try {
             // 生成验证码字符串并保存到redis中
             String code = defaultKaptcha.createText();
             System.out.println(code);
-            redisTemplate.opsForValue().set("verificationCode", code);
+            redisTemplate.opsForValue().set(username + "verificationCode", code);
+            System.out.println(username + "verificationCode");
             BufferedImage challenge = defaultKaptcha.createImage(code);
             ImageIO.write(challenge, "jpg", imgOutputStream);
         } catch (IllegalArgumentException | IOException e) {

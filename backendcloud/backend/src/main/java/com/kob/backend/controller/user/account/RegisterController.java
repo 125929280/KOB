@@ -18,7 +18,6 @@ public class RegisterController {
 
     @PostMapping("/user/account/sendActivationCode/")
     public Map<String, String> sendActivationCode(@RequestParam Map<String, String> data) {
-        System.out.println("zz");
         return registerService.sendActivationCode(data);
     }
 }
