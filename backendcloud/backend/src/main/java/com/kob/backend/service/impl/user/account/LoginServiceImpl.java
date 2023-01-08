@@ -58,19 +58,30 @@ public class LoginServiceImpl implements LoginService {
             return map;
         }
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(username, password);
-        try {
-            Authentication authenticate = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
-            UserDetailsImpl principal = (UserDetailsImpl) authenticate.getPrincipal();
-            String userId = principal.getUser().getId().toString();
-
-            String jwt = JwtUtil.createJWT(userId);
-            map.put("token", jwt);
-
-            redisTemplate.opsForValue().set("login:" + userId, principal);
-        } catch (Exception e) {
-            map.put("error_message", "账户名密码错误");
-            return map;
+        Authentication authenticate = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
+        if(Objects.isNull(authenticate)) {
+            throw new RuntimeException("用户名密码错误");
         }
+        UserDetailsImpl principal = (UserDetailsImpl) authenticate.getPrincipal();
+        String userId = principal.getUser().getId().toString();
+
+        String jwt = JwtUtil.createJWT(userId);
+        map.put("token", jwt);
+
+        redisTemplate.opsForValue().set("login:" + userId, principal);
+//        try {
+//            Authentication authenticate = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
+//            UserDetailsImpl principal = (UserDetailsImpl) authenticate.getPrincipal();
+//            String userId = principal.getUser().getId().toString();
+//
+//            String jwt = JwtUtil.createJWT(userId);
+//            map.put("token", jwt);
+//
+//            redisTemplate.opsForValue().set("login:" + userId, principal);
+//        } catch (Exception e) {
+//            map.put("error_message", "账户名密码错误");
+//            return map;
+//        }
         map.put("error_message", "success");
         return map;
     }
@@ -82,6 +93,7 @@ public class LoginServiceImpl implements LoginService {
         try {
             // 生成验证码字符串并保存到redis中
             String code = defaultKaptcha.createText();
+            System.out.println(code);
             redisTemplate.opsForValue().set("verificationCode", code);
             BufferedImage challenge = defaultKaptcha.createImage(code);
             ImageIO.write(challenge, "jpg", imgOutputStream);
