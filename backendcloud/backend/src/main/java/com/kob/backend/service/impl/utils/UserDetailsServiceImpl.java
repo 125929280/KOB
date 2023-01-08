@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 /**
@@ -27,6 +28,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         if(Objects.isNull(user)) {
             throw new RuntimeException("用户不存在");
         }
-        return new UserDetailsImpl(user);
+        return new UserDetailsImpl(user, new ArrayList<>());
     }
 }

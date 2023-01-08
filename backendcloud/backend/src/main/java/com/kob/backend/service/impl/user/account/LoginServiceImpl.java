@@ -22,6 +22,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 public class LoginServiceImpl implements LoginService {
@@ -52,7 +53,7 @@ public class LoginServiceImpl implements LoginService {
         String verificationCode = data.get("verificationCode");
         System.out.println(username + " " + password + " " + actualVerificationCode + " " + verificationCode);
         Map<String, String> map = new HashMap<>();
-        if (StringUtils.isBlank(verificationCode) || !actualVerificationCode.equalsIgnoreCase(verificationCode)) {
+        if (StringUtils.isBlank(verificationCode) || !Objects.requireNonNull(actualVerificationCode).equalsIgnoreCase(verificationCode)) {
             map.put("error_message", "验证码错误");
             return map;
         }
