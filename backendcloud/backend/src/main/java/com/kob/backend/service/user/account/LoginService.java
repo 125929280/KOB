@@ -6,11 +6,9 @@ import java.io.IOException;
 import java.util.Map;
 
 public interface LoginService {
-    Map<String, String> getToken(Map<String, String> data);
+    Map<String, String> getToken(Map<String, String> data, String ip);
 
-    void getVerificationCode(HttpServletRequest request,
-                             HttpServletResponse response,
-                             String username) throws IOException;
+    void getVerificationCode(HttpServletRequest request, HttpServletResponse response) throws IOException;
 
     Map<String, String> logout();
 }

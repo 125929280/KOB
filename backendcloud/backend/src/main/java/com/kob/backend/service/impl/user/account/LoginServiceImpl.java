@@ -5,6 +5,7 @@ import com.google.code.kaptcha.impl.DefaultKaptcha;
 import com.kob.backend.service.impl.utils.UserDetailsImpl;
 import com.kob.backend.service.user.account.LoginService;
 import com.kob.backend.utils.JwtUtil;
+import com.kob.backend.utils.WebUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,6 +24,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class LoginServiceImpl implements LoginService {
@@ -46,15 +48,15 @@ public class LoginServiceImpl implements LoginService {
      * @return
      */
     @Override
-    public Map<String, String> getToken(Map<String, String> data) {
+    public Map<String, String> getToken(Map<String, String> data, String ip) {
         String username = data.get("username");
         String password = data.get("password");
-        System.out.println(username + "verificationCode");
-        String actualVerificationCode = (String) redisTemplate.opsForValue().get(username + "verificationCode");
+        String actualVerificationCode = (String) redisTemplate.opsForValue().get(ip + "verificationCode");
+        System.out.println("[" + ip + "verificationCode" + ", " + actualVerificationCode + "]");
         String verificationCode = data.get("verificationCode");
         System.out.println(username + " " + password + " " + actualVerificationCode + " " + verificationCode);
         Map<String, String> map = new HashMap<>();
-        if (StringUtils.isBlank(verificationCode) || !Objects.requireNonNull(actualVerificationCode).equalsIgnoreCase(verificationCode)) {
+        if (StringUtils.isBlank(actualVerificationCode) || StringUtils.isBlank(verificationCode) || !actualVerificationCode.equalsIgnoreCase(verificationCode)) {
             map.put("error_message", "验证码错误");
             return map;
         }
@@ -75,17 +77,15 @@ public class LoginServiceImpl implements LoginService {
     }
 
     @Override
-    public void getVerificationCode(HttpServletRequest request,
-                             HttpServletResponse response,
-                             String username) throws IOException {
+    public void getVerificationCode(HttpServletRequest request, HttpServletResponse response) throws IOException {
         byte[] captchaOutputStream = null;
         ByteArrayOutputStream imgOutputStream = new ByteArrayOutputStream();
         try {
             // 生成验证码字符串并保存到redis中
             String code = defaultKaptcha.createText();
-            System.out.println(code);
-            redisTemplate.opsForValue().set(username + "verificationCode", code);
-            System.out.println(username + "verificationCode");
+            String ip = WebUtil.getIpAddress(request);
+            redisTemplate.opsForValue().set(ip + "verificationCode", code, 60, TimeUnit.MINUTES);
+            System.out.println("[" + ip + "verificationCode" + ", " + code + "]");
             BufferedImage challenge = defaultKaptcha.createImage(code);
             ImageIO.write(challenge, "jpg", imgOutputStream);
         } catch (IllegalArgumentException | IOException e) {

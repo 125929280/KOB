@@ -60,7 +60,7 @@ export default {
   setup() {
     const store = useStore();
     const imgUrl = ref(
-      "http://localhost:3000/user/account/getVerificationCode"
+      "http://127.0.0.1:3000/user/account/getVerificationCode/"
     );
     let username = ref("");
     let password = ref("");
