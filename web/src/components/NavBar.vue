@@ -5,7 +5,10 @@
         >King Of Bots</router-link
       >
       <div class="collapse navbar-collapse" id="navbarText">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <ul
+          class="navbar-nav me-auto mb-2 mb-lg-0"
+          v-if="$store.state.user.is_login"
+        >
           <li class="nav-item">
             <router-link
               :class="route_name == 'pk_index' ? 'nav-link active' : 'nav-link'"
