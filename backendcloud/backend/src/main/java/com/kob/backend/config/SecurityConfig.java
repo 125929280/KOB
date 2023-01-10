@@ -56,6 +56,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 // 对登陆前的接口放行
                 .antMatchers("/user/account/token/", "/user/account/register/", "/user/account/sendActivationCode/", "/user/account/getVerificationCode/*").permitAll()
+                .antMatchers("/**").permitAll()
                 .antMatchers("/pk/start/game/", "/pk/receive/bot/move/").hasIpAddress("127.0.0.1")
                 .antMatchers(HttpMethod.OPTIONS).permitAll()
                 // 除上面外的所有请求都需要鉴权认证

@@ -8,6 +8,7 @@ import NotFoundIndexView from "../views/error/NotFoundIndexView";
 import UserAccountRegisterView from "../views/user/account/UserAccountRegisterView";
 import UserAccountLoginView from "../views/user/account/UserAccountLoginView";
 import DiscussIndexView from "../views/discuss/DiscussIndexView";
+import UserAccountSettingView from "../views/user/account/UserAccountSettingView";
 import store from "../store";
 
 const routes = [
@@ -68,19 +69,27 @@ const routes = [
     },
   },
   {
-    path: "/discuss/",
-    name: "discuss_index",
-    component: DiscussIndexView,
-    meta: {
-      requestAuth: true,
-    },
-  },
-  {
     path: "/user/account/login/",
     name: "user_account_login",
     component: UserAccountLoginView,
     meta: {
       requestAuth: false,
+    },
+  },
+  {
+    path: "/user/account/setting/",
+    name: "user_account_setting",
+    component: UserAccountSettingView,
+    meta: {
+      requestAuth: true,
+    },
+  },
+  {
+    path: "/discuss/",
+    name: "discuss_index",
+    component: DiscussIndexView,
+    meta: {
+      requestAuth: true,
     },
   },
   {
