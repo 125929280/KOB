@@ -5,6 +5,7 @@ import com.kob.backend.mapper.UserMapper;
 import com.kob.backend.pojo.User;
 import com.kob.backend.service.impl.utils.UserDetailsImpl;
 import com.kob.backend.service.user.account.InfoService;
+import com.kob.backend.utils.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,7 +18,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
 
 @Service
 public class InfoServiceImpl implements InfoService {
@@ -92,7 +92,7 @@ public class InfoServiceImpl implements InfoService {
             return map;
         }
 
-        String filename = UUID.randomUUID() + suffix;
+        String filename = StringUtil.generateUUID() + suffix;
         File file = new File(System.getProperty("user.dir") + "/backend/src/main/resources/resources/" + filename);
         try {
             data.transferTo(file);

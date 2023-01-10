@@ -1,5 +1,6 @@
 package com.kob.botrunningsystem.service.impl.utils;
 
+import com.kob.botrunningsystem.utils.StringUtil;
 import org.joor.Reflect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -10,7 +11,6 @@ import org.springframework.web.client.RestTemplate;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
-import java.util.UUID;
 import java.util.function.Supplier;
 
 @Component
@@ -44,8 +44,7 @@ public class Consumer extends Thread {
 
     @Override
     public void run() {
-        UUID uuid = UUID.randomUUID();
-        String uid = uuid.toString().substring(0, 8);
+        String uid = StringUtil.generateUUID().substring(0, 8);
         Supplier<Integer> botInterface = Reflect.compile("com.kob.botrunningsystem.utils.Bot" + uid, addUid(bot.getBotCode(), uid)).create().get();
         File file = new File("input.txt");
         try (PrintWriter fout = new PrintWriter(file)){

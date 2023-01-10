@@ -10,19 +10,14 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.util.Base64;
 import java.util.Date;
-import java.util.UUID;
 
 @Component
 public class JwtUtil {
     public static final long JWT_TTL = 60 * 60 * 1000L * 24 * 14;  // 有效期14天
     public static final String JWT_KEY = "SDFGjhdsfalshdfHFdsjkdsfds121232131afasdfac";
 
-    public static String getUUID() {
-        return UUID.randomUUID().toString().replaceAll("-", "");
-    }
-
     public static String createJWT(String subject) {
-        JwtBuilder builder = getJwtBuilder(subject, null, getUUID());
+        JwtBuilder builder = getJwtBuilder(subject, null, StringUtil.generateUUID());
         return builder.compact();
     }
 
