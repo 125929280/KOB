@@ -1,10 +1,9 @@
-package com.kob.backend.service.impl.discuss;
+package com.kob.backend.service.impl.comment;
 
-import com.kob.backend.dict.DiscussType;
-import com.kob.backend.mapper.DiscussMapper;
-import com.kob.backend.pojo.Discuss;
+import com.kob.backend.mapper.CommentMapper;
+import com.kob.backend.pojo.Comment;
 import com.kob.backend.pojo.User;
-import com.kob.backend.service.discuss.AddDiscussService;
+import com.kob.backend.service.comment.AddCommentService;
 import com.kob.backend.service.impl.utils.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,9 +15,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
-public class AddDiscussServiceImpl implements AddDiscussService {
+public class AddCommentServiceImpl implements AddCommentService {
     @Autowired
-    private DiscussMapper discussMapper;
+    private CommentMapper commentMapper;
 
     @Override
     public Map<String, String> add(Map<String, String> data) {
@@ -26,20 +25,10 @@ public class AddDiscussServiceImpl implements AddDiscussService {
         UserDetailsImpl principal = (UserDetailsImpl) authentication.getPrincipal();
         User user = principal.getUser();
 
-
-        String title = data.get("title");
-        DiscussType type = DiscussType.valueOf(data.get("type"));
+        Integer discussId = Integer.valueOf(data.get("discuss_id"));
         String content = data.get("content");
 
         Map<String, String> map = new HashMap<>();
-        if (title == null || title.length() == 0) {
-            map.put("error_message", "标题不能为空");
-            return map;
-        }
-        if (title.length() > 100) {
-            map.put("error_message", "标题长度不能大于100");
-            return map;
-        }
         if (content == null || content.length() == 0) {
             map.put("error_message", "内容不能为空");
             return map;
@@ -50,9 +39,9 @@ public class AddDiscussServiceImpl implements AddDiscussService {
         }
 
         Date now = new Date();
-        Discuss discuss = new Discuss(null, user.getId(), title, type, content, now, now);
+        Comment comment = new Comment(null, user.getId(), discussId, content, now);
 
-        discussMapper.insert(discuss);
+        commentMapper.insert(comment);
         map.put("error_message", "success");
         return map;
     }

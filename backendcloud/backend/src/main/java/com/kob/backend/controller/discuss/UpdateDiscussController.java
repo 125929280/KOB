@@ -13,7 +13,7 @@ public class UpdateDiscussController {
     @Autowired
     private UpdateDiscussService updateDiscussService;
 
-    @PostMapping("/discuss/update/")
+    @PostMapping("/user/discuss/update/")
     public Map<String, String> update(@RequestParam Map<String, String> data) {
         return updateDiscussService.update(data);
     }

@@ -36,6 +36,7 @@ public class GetDiscussListServiceImpl implements GetDiscussListService {
             User user = userMapper.selectById(discuss.getUserId());
             item.put("photo", user.getPhoto());
             item.put("username", user.getUsername());
+            item.put("type", discuss.getType().getDesc());
             item.put("discuss", discuss);
             items.add(item);
         }

@@ -1,7 +1,6 @@
-package com.kob.backend.controller.discuss;
+package com.kob.backend.controller.comment;
 
-import com.kob.backend.service.discuss.RemoveDiscussService;
-import com.kob.backend.service.user.bot.RemoveBotService;
+import com.kob.backend.service.comment.RemoveCommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -10,13 +9,12 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 
 @RestController
-public class RemoveDiscussController {
+public class RemoveCommentController {
     @Autowired
-    private RemoveDiscussService removeDiscussService;
+    private RemoveCommentService removeCommentService;
 
-    @PostMapping("/user/discuss/remove/")
+    @PostMapping("/user/comment/remove/")
     public Map<String, String> remove(@RequestParam Map<String, String> data) {
-        return removeDiscussService.remove(data);
+        return removeCommentService.remove(data);
     }
-
 }
