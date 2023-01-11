@@ -122,7 +122,7 @@
                       <div class="modal-dialog modal-xl">
                         <div class="modal-content">
                           <div class="modal-header">
-                            <h5 class="modal-title">创建Bot</h5>
+                            <h5 class="modal-title">修改Bot</h5>
                             <button
                               type="button"
                               class="btn-close"
