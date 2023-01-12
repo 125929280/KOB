@@ -37,7 +37,7 @@
             >
               查看
             </button>
-            <!-- Modal -->
+            <!-- 查看讨论 Modal -->
             <div
               class="modal fade"
               :id="'open-discuss-btn-' + discuss.discuss.id"
@@ -187,7 +187,7 @@
     >
       发表
     </button>
-    <!-- Modal -->
+    <!-- 发表评论 Modal -->
     <div class="modal fade" id="add-discuss-btn" tabindex="-1">
       <div class="modal-dialog modal-xl">
         <div class="modal-content">
@@ -227,7 +227,7 @@
                 v-model="discuss_add.content"
                 class="form-control"
                 id="add-discuss-content"
-                rows="3"
+                rows="15"
                 placeholder="请输入讨论内容"
               ></textarea>
             </div>
@@ -263,11 +263,12 @@ export default {
   setup() {
     const store = useStore();
     let discusses = ref([]);
-    let current_page = 1;
+    let current_discuss_page = 1;
     let total_discusses = 0;
     console.log(total_discusses);
     const discuss_add = reactive({
       title: "",
+      type: "BLOG",
       content: "",
       error_message: "",
     });
@@ -281,8 +282,8 @@ export default {
       error_message: "",
     });
 
-    const pull_page = (page) => {
-      current_page = page;
+    const pull_discuss_page = (page) => {
+      current_discuss_page = page;
       $.ajax({
         url: "http://127.0.0.1:3000/user/discuss/getList/",
         data: {
@@ -303,7 +304,7 @@ export default {
         },
       });
     };
-    pull_page(current_page);
+    pull_discuss_page(current_discuss_page);
 
     const add_discuss = () => {
       discuss_add.error_message = "";
@@ -321,10 +322,10 @@ export default {
         success(resp) {
           if (resp.error_message === "success") {
             discuss_add.title = "";
-            discuss_add.type = "";
+            discuss_add.type = "BLOG";
             discuss_add.content = "";
             Modal.getInstance("#add-discuss-btn").hide();
-            pull_page(current_page);
+            pull_discuss_page(current_discuss_page);
           } else {
             discuss_add.error_message = resp.error_message;
           }
@@ -345,7 +346,7 @@ export default {
         success(resp) {
           console.log(resp);
           if (resp.error_message === "success") {
-            pull_comments_page(current_page, discussId);
+            pull_discuss_page(current_discuss_page);
           }
         },
       });
