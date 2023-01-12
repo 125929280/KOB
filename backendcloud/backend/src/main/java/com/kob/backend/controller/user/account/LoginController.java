@@ -21,8 +21,8 @@ public class LoginController {
 
 
     @PostMapping("/user/account/token/")
-    public Map<String, String> getToken(@RequestParam Map<String, String> map, HttpServletRequest request) {
-        return loginService.getToken(map, WebUtil.getIpAddress(request));
+    public Map<String, String> getToken(@RequestParam Map<String, String> map) {
+        return loginService.getToken(map);
     }
 
     @GetMapping("/user/account/getVerificationCode/")

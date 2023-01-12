@@ -14,6 +14,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
@@ -49,9 +51,10 @@ public class LoginServiceImpl implements LoginService {
      * @return
      */
     @Override
-    public Map<String, String> getToken(Map<String, String> data, String ip) {
+    public Map<String, String> getToken(Map<String, String> data) {
         String username = data.get("username");
         String password = data.get("password");
+        String ip = WebUtil.getIpAddress();
         String actualVerificationCode = (String) redisTemplate.opsForValue().get(RedisKeyUtil.getVerificationKey(ip));
         System.out.println("[" + RedisKeyUtil.getVerificationKey(ip) + ", " + actualVerificationCode + "]");
         String verificationCode = data.get("verificationCode");
@@ -84,7 +87,7 @@ public class LoginServiceImpl implements LoginService {
         try {
             // 生成验证码字符串并保存到redis中
             String code = defaultKaptcha.createText();
-            String ip = WebUtil.getIpAddress(request);
+            String ip = WebUtil.getIpAddress();
             redisTemplate.opsForValue().set(RedisKeyUtil.getVerificationKey(ip), code, 60, TimeUnit.MINUTES);
             System.out.println("[" + RedisKeyUtil.getVerificationKey(ip) + ", " + code + "]");
             BufferedImage challenge = defaultKaptcha.createImage(code);
