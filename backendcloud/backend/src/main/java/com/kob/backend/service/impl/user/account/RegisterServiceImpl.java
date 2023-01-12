@@ -19,6 +19,7 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class RegisterServiceImpl implements RegisterService {
@@ -150,7 +151,7 @@ public class RegisterServiceImpl implements RegisterService {
             return map;
         }
 
-        redisTemplate.opsForValue().set(RedisKeyUtil.getActivationKey(username), activationCode);
+        redisTemplate.opsForValue().set(RedisKeyUtil.getActivationKey(username), activationCode, 60, TimeUnit.SECONDS);
 
         Context context = new Context();
         context.setVariable("username", username);

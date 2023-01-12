@@ -88,7 +88,7 @@ public class LoginServiceImpl implements LoginService {
             // 生成验证码字符串并保存到redis中
             String code = defaultKaptcha.createText();
             String ip = WebUtil.getIpAddress();
-            redisTemplate.opsForValue().set(RedisKeyUtil.getVerificationKey(ip), code, 60, TimeUnit.MINUTES);
+            redisTemplate.opsForValue().set(RedisKeyUtil.getVerificationKey(ip), code, 60, TimeUnit.SECONDS);
             System.out.println("[" + RedisKeyUtil.getVerificationKey(ip) + ", " + code + "]");
             BufferedImage challenge = defaultKaptcha.createImage(code);
             ImageIO.write(challenge, "jpg", imgOutputStream);
