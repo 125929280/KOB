@@ -2,6 +2,7 @@ package com.kob.backend.config.filter;
 
 import com.kob.backend.service.impl.utils.UserDetailsImpl;
 import com.kob.backend.utils.JwtUtil;
+import com.kob.backend.utils.RedisKeyUtil;
 import io.jsonwebtoken.Claims;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +56,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             throw new RuntimeException(e);
         }
 
-        UserDetailsImpl loginUser = (UserDetailsImpl) redisTemplate.opsForValue().get("login:" + userid);
+        UserDetailsImpl loginUser = (UserDetailsImpl) redisTemplate.opsForValue().get(RedisKeyUtil.getLoginKey(userid));
         if (Objects.isNull(loginUser)) {
             throw new RuntimeException("用户未登录");
         }

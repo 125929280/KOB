@@ -5,6 +5,7 @@ import com.google.code.kaptcha.impl.DefaultKaptcha;
 import com.kob.backend.service.impl.utils.UserDetailsImpl;
 import com.kob.backend.service.user.account.LoginService;
 import com.kob.backend.utils.JwtUtil;
+import com.kob.backend.utils.RedisKeyUtil;
 import com.kob.backend.utils.WebUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -51,8 +52,8 @@ public class LoginServiceImpl implements LoginService {
     public Map<String, String> getToken(Map<String, String> data, String ip) {
         String username = data.get("username");
         String password = data.get("password");
-        String actualVerificationCode = (String) redisTemplate.opsForValue().get(ip + "verificationCode");
-        System.out.println("[" + ip + "verificationCode" + ", " + actualVerificationCode + "]");
+        String actualVerificationCode = (String) redisTemplate.opsForValue().get(RedisKeyUtil.getVerificationKey(ip));
+        System.out.println("[" + RedisKeyUtil.getVerificationKey(ip) + ", " + actualVerificationCode + "]");
         String verificationCode = data.get("verificationCode");
         System.out.println(username + " " + password + " " + actualVerificationCode + " " + verificationCode);
         Map<String, String> map = new HashMap<>();
@@ -71,7 +72,7 @@ public class LoginServiceImpl implements LoginService {
         String jwt = JwtUtil.createJWT(userId);
         map.put("token", jwt);
 
-        redisTemplate.opsForValue().set("login:" + userId, principal);
+        redisTemplate.opsForValue().set(RedisKeyUtil.getLoginKey(userId), principal);
         map.put("error_message", "success");
         return map;
     }
@@ -84,8 +85,8 @@ public class LoginServiceImpl implements LoginService {
             // 生成验证码字符串并保存到redis中
             String code = defaultKaptcha.createText();
             String ip = WebUtil.getIpAddress(request);
-            redisTemplate.opsForValue().set(ip + "verificationCode", code, 60, TimeUnit.MINUTES);
-            System.out.println("[" + ip + "verificationCode" + ", " + code + "]");
+            redisTemplate.opsForValue().set(RedisKeyUtil.getVerificationKey(ip), code, 60, TimeUnit.MINUTES);
+            System.out.println("[" + RedisKeyUtil.getVerificationKey(ip) + ", " + code + "]");
             BufferedImage challenge = defaultKaptcha.createImage(code);
             ImageIO.write(challenge, "jpg", imgOutputStream);
         } catch (IllegalArgumentException | IOException e) {

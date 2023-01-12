@@ -1,13 +1,20 @@
 package com.kob.backend.service.impl.user.account;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.kob.backend.dict.DiscussType;
+import com.kob.backend.mapper.DiscussMapper;
 import com.kob.backend.mapper.UserMapper;
+import com.kob.backend.pojo.Discuss;
 import com.kob.backend.pojo.User;
 import com.kob.backend.service.user.account.RegisterService;
 import com.kob.backend.utils.MailUtil;
+import com.kob.backend.utils.RedisKeyUtil;
+import com.kob.backend.utils.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
@@ -27,15 +34,21 @@ public class RegisterServiceImpl implements RegisterService {
     @Autowired
     private TemplateEngine templateEngine;
 
-    private final String activationCode = UUID.randomUUID().toString().replaceAll("-", "").substring(0, 10);
+    @Autowired
+    private DiscussMapper discussMapper;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @Override
+    @Transactional
     public Map<String, String> register(Map<String, String> data) {
         String username = data.get("username");
         String password = data.get("password");
         String confirmedPassword = data.get("confirmedPassword");
         String email = data.get("email");
-        String code = data.get("activationCode");
+        String activationCode = data.get("activationCode");
+        String actualActivationCode = (String) redisTemplate.opsForValue().get(RedisKeyUtil.getActivationKey(username));
 
         Map<String, String> map = new HashMap<>();
         if (username == null) {
@@ -50,7 +63,7 @@ public class RegisterServiceImpl implements RegisterService {
             map.put("error_message", "邮箱不能为空");
             return map;
         }
-        if (code == null) {
+        if (activationCode == null) {
             map.put("error_message", "验证码不能为空");
             return map;
         }
@@ -67,7 +80,7 @@ public class RegisterServiceImpl implements RegisterService {
             map.put("error_message", "邮箱不能为空");
             return map;
         }
-        if (code.length() == 0) {
+        if (activationCode.length() == 0) {
             map.put("error_message", "验证码不能为空");
             return map;
         }
@@ -83,7 +96,7 @@ public class RegisterServiceImpl implements RegisterService {
             map.put("error_message", "两次输入的密码不一致");
             return map;
         }
-        if (!activationCode.equals(code)) {
+        if (!activationCode.equals(actualActivationCode)) {
             map.put("error_message", "验证码错误");
             return map;
         }
@@ -105,6 +118,9 @@ public class RegisterServiceImpl implements RegisterService {
         Date now = new Date();
         User user = new User(null, username, encodedPassword, photo, 1500, email, now, now);
         userMapper.insert(user);
+
+        Discuss discuss = new Discuss(null, user.getId(), "新人报道", DiscussType.CHAT, "Hello", now, now);
+        discussMapper.insert(discuss);
         map.put("error_message", "success");
         return map;
     }
@@ -113,7 +129,9 @@ public class RegisterServiceImpl implements RegisterService {
     public Map<String, String> sendActivationCode(Map<String, String> data) {
         String username = data.get("username");
         String email = data.get("email");
+        String activationCode = StringUtil.generateUUID();
         Map<String, String> map = new HashMap<>();
+
         if (username == null) {
             map.put("error_message", "用户名不能为空");
             return map;
@@ -131,6 +149,8 @@ public class RegisterServiceImpl implements RegisterService {
             map.put("error_message", "邮箱不能为空");
             return map;
         }
+
+        redisTemplate.opsForValue().set(RedisKeyUtil.getActivationKey(username), activationCode);
 
         Context context = new Context();
         context.setVariable("username", username);
