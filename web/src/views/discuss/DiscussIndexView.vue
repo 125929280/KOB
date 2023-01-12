@@ -1,6 +1,78 @@
 <template>
   <ContentField>
-    <table class="table table-striped table-hover" style="text-align: center">
+    <button
+      type="button"
+      class="btn btn-primary float-end"
+      data-bs-toggle="modal"
+      data-bs-target="#add-discuss-btn"
+    >
+      发表
+    </button>
+    <!-- 发表评论 Modal -->
+    <div class="modal fade" id="add-discuss-btn" tabindex="-1">
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">发表讨论</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="add-discuss-title" class="form-label">名称</label>
+              <input
+                v-model="discuss_add.title"
+                type="text"
+                class="form-control"
+                id="add-discuss-title"
+                placeholder="请输入讨论主题"
+              />
+            </div>
+            <select
+              class="form-select"
+              aria-label="Default select example"
+              v-model="discuss_add.type"
+            >
+              <option selected value="BLOG">分享</option>
+              <option value="SOLUTION">题解</option>
+              <option value="CHAT">吐槽</option>
+              <option value="ADVICE">建议</option>
+            </select>
+            <div class="mb-3">
+              <label for="add-discuss-content" class="form-label">内容</label>
+              <textarea
+                v-model="discuss_add.content"
+                class="form-control"
+                id="add-discuss-content"
+                rows="15"
+                placeholder="请输入讨论内容"
+              ></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <div class="error-message">{{ discuss_add.error_message }}</div>
+            <button type="button" class="btn btn-primary" @click="add_discuss">
+              发表
+            </button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              取消
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <table
+      class="table table-striped table-hover"
+      style="text-align: center; table-layout: fixed"
+    >
       <thead>
         <tr>
           <th>类型</th>
@@ -56,8 +128,8 @@
                   </div>
                   <div class="modal-body">
                     <table
-                      class="table table-striped table-hover"
-                      style="text-align: center"
+                      class="table"
+                      style="text-align: center; table-layout: fixed"
                     >
                       <thead>
                         <tr>
@@ -130,16 +202,43 @@
                         </tr>
                       </tbody>
                     </table>
+                    <nav aria-label="...">
+                      <ul class="pagination" style="float: right">
+                        <li
+                          class="page-item"
+                          @click="click_comment_page(-2, discuss.discuss.id)"
+                        >
+                          <a class="page-link" href="#">前一页</a>
+                        </li>
+                        <li
+                          :class="'page-item ' + page.is_active"
+                          v-for="page in comment_pages"
+                          :key="page.number"
+                          @click="
+                            click_comment_page(page.number, discuss.discuss.id)
+                          "
+                        >
+                          <a class="page-link" href="#">{{ page.number }}</a>
+                        </li>
+                        <li
+                          class="page-item"
+                          @click="click_comment_page(-1, discuss.discuss.id)"
+                        >
+                          <a class="page-link" href="#">后一页</a>
+                        </li>
+                      </ul>
+                    </nav>
                     <div class="mb-3">
-                      <label for="add-comment-content" class="form-label"
-                        >内容</label
-                      >
+                      <label
+                        for="add-comment-content"
+                        class="form-label"
+                      ></label>
                       <textarea
                         v-model="comment_add.content"
                         class="form-control"
                         id="add-comment-content"
                         rows="3"
-                        placeholder="请输入讨论内容"
+                        placeholder="请输入评论内容"
                       ></textarea>
                     </div>
                   </div>
@@ -168,10 +267,7 @@
               @click="remove_discuss(discuss.discuss.id)"
               type="button"
               class="btn btn-danger"
-              v-if="
-                parseInt(discuss.discuss.userId) ===
-                parseInt($store.state.user.id)
-              "
+              v-if="discuss.discuss.userId === parseInt($store.state.user.id)"
             >
               删除
             </button>
@@ -179,75 +275,25 @@
         </tr>
       </tbody>
     </table>
-    <button
-      type="button"
-      class="btn btn-primary float-end"
-      data-bs-toggle="modal"
-      data-bs-target="#add-discuss-btn"
-    >
-      发表
-    </button>
-    <!-- 发表评论 Modal -->
-    <div class="modal fade" id="add-discuss-btn" tabindex="-1">
-      <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">发表讨论</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
-          </div>
-          <div class="modal-body">
-            <div class="mb-3">
-              <label for="add-discuss-title" class="form-label">名称</label>
-              <input
-                v-model="discuss_add.title"
-                type="text"
-                class="form-control"
-                id="add-discuss-title"
-                placeholder="请输入讨论主题"
-              />
-            </div>
-            <select
-              class="form-select"
-              aria-label="Default select example"
-              v-model="discuss_add.type"
-            >
-              <option selected value="BLOG">分享</option>
-              <option value="SOLUTION">题解</option>
-              <option value="CHAT">吐槽</option>
-              <option value="ADVICE">建议</option>
-            </select>
-            <div class="mb-3">
-              <label for="add-discuss-content" class="form-label">内容</label>
-              <textarea
-                v-model="discuss_add.content"
-                class="form-control"
-                id="add-discuss-content"
-                rows="15"
-                placeholder="请输入讨论内容"
-              ></textarea>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <div class="error-message">{{ discuss_add.error_message }}</div>
-            <button type="button" class="btn btn-primary" @click="add_discuss">
-              发表
-            </button>
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-bs-dismiss="modal"
-            >
-              取消
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+
+    <nav aria-label="...">
+      <ul class="pagination" style="float: right">
+        <li class="page-item" @click="click_discuss_page(-2)">
+          <a class="page-link" href="#">前一页</a>
+        </li>
+        <li
+          :class="'page-item ' + page.is_active"
+          v-for="page in discuss_pages"
+          :key="page.number"
+          @click="click_discuss_page(page.number)"
+        >
+          <a class="page-link" href="#">{{ page.number }}</a>
+        </li>
+        <li class="page-item" @click="click_discuss_page(-1)">
+          <a class="page-link" href="#">后一页</a>
+        </li>
+      </ul>
+    </nav>
   </ContentField>
 </template>
 <script>
@@ -265,6 +311,7 @@ export default {
     let discusses = ref([]);
     let current_discuss_page = 1;
     let total_discusses = 0;
+    let discuss_pages = ref([]);
     console.log(total_discusses);
     const discuss_add = reactive({
       title: "",
@@ -273,14 +320,32 @@ export default {
       error_message: "",
     });
 
-    let comments = ref([]);
-    let current_comments_page = 1;
-    let total_comments = 0;
-    console.log(total_comments);
-    const comment_add = reactive({
-      content: "",
-      error_message: "",
-    });
+    const update_discuss_pages = () => {
+      let max_pages = parseInt(Math.ceil(total_discusses / 10));
+      let new_pages = [];
+      for (
+        let i = current_discuss_page - 2;
+        i <= current_discuss_page + 2;
+        i++
+      ) {
+        if (i >= 1 && i <= max_pages) {
+          new_pages.push({
+            number: i,
+            is_active: i === current_discuss_page ? "active" : "",
+          });
+        }
+      }
+      discuss_pages.value = new_pages;
+    };
+
+    const click_discuss_page = (page) => {
+      if (page === -2) page = current_discuss_page - 1;
+      else if (page === -1) page = current_discuss_page + 1;
+      let max_pages = parseInt(Math.ceil(total_discusses / 10));
+      if (page >= 1 && page <= max_pages) {
+        pull_discuss_page(page);
+      }
+    };
 
     const pull_discuss_page = (page) => {
       current_discuss_page = page;
@@ -297,7 +362,7 @@ export default {
           console.log(resp);
           discusses.value = resp.discusses;
           total_discusses = resp.discusses_count;
-          //   update_pages();
+          update_discuss_pages();
         },
         error(resp) {
           console.log(resp);
@@ -352,6 +417,51 @@ export default {
       });
     };
 
+    let comments = ref([]);
+    let current_comments_page = 1;
+    let total_comments = 0;
+    let comment_pages = ref([]);
+    console.log(total_comments);
+    const comment_add = reactive({
+      content: "",
+      error_message: "",
+    });
+
+    const update_comment_pages = () => {
+      let max_pages = parseInt(Math.ceil(total_comments / 10));
+      let new_pages = [];
+      if (max_pages === 0) {
+        new_pages.push({
+          number: 1,
+          is_active: "active",
+        });
+        comment_pages.value = new_pages;
+        return;
+      }
+      for (
+        let i = current_comments_page - 2;
+        i <= current_comments_page + 2;
+        i++
+      ) {
+        if (i >= 1 && i <= max_pages) {
+          new_pages.push({
+            number: i,
+            is_active: i === current_comments_page ? "active" : "",
+          });
+        }
+      }
+      comment_pages.value = new_pages;
+    };
+
+    const click_comment_page = (page, discussId) => {
+      if (page === -2) page = current_comments_page - 1;
+      else if (page === -1) page = current_comments_page + 1;
+      let max_pages = parseInt(Math.ceil(total_comments / 10));
+      if (page >= 1 && page <= max_pages) {
+        pull_comments_page(page, discussId);
+      }
+    };
+
     const pull_comments_page = (page, discussId) => {
       current_comments_page = page;
       $.ajax({
@@ -368,7 +478,7 @@ export default {
           console.log(resp);
           comments.value = resp.comments;
           total_comments = resp.comments_count;
-          //   update_pages();
+          update_comment_pages();
         },
         error(resp) {
           console.log(resp);
@@ -421,87 +531,19 @@ export default {
     return {
       discusses,
       discuss_add,
+      discuss_pages,
+      click_discuss_page,
       add_discuss,
       remove_discuss,
       comments,
       comment_add,
       current_comments_page,
+      comment_pages,
+      click_comment_page,
       pull_comments_page,
       add_comment,
       remove_comment,
     };
-    // $.ajax({
-    //   url: "http://127.0.0.1:3000/user/discuss/add/",
-    //   type: "post",
-    //   data: {
-    //     title: "bot_add.title",
-    //     type: "BLOG",
-    //     content: "bot_add.content",
-    //   },
-    //   headers: {
-    //     Authorization: "Bearer " + store.state.user.token,
-    //   },
-    //   success(resp) {
-    //     console.log(resp);
-    //   },
-    //   error(resp) {
-    //     console.log(resp);
-    //   },
-    // });
-
-    // $.ajax({
-    //   url: "http://127.0.0.1:3000/user/discuss/remove/",
-    //   type: "post",
-    //   data: {
-    //     discuss_id: 4,
-    //   },
-    //   headers: {
-    //     Authorization: "Bearer " + store.state.user.token,
-    //   },
-    //   success(resp) {
-    //     console.log(resp);
-    //   },
-    //   error(resp) {
-    //     console.log(resp);
-    //   },
-    // });
-
-    // $.ajax({
-    //   url: "http://127.0.0.1:3000/user/discuss/getList/",
-    //   type: "get",
-    //   headers: {
-    //     Authorization: "Bearer " + store.state.user.token,
-    //   },
-    //   data: {
-    //     page: 1,
-    //   },
-    //   success(resp) {
-    //     console.log(resp);
-    //   },
-    //   error(resp) {
-    //     console.log(resp);
-    //   },
-    // });
-
-    // $.ajax({
-    //   url: "http://127.0.0.1:3000/user/discuss/update/",
-    //   type: "post",
-    //   data: {
-    //     discuss_id: 4,
-    //     title: "bot_add.title",
-    //     type: "SOLUTION",
-    //     content: "bot_add.content",
-    //   },
-    //   headers: {
-    //     Authorization: "Bearer " + store.state.user.token,
-    //   },
-    //   success(resp) {
-    //     console.log(resp);
-    //   },
-    //   error(resp) {
-    //     console.log(resp);
-    //   },
-    // });
   },
 };
 </script>
@@ -513,5 +555,8 @@ img.discuss-user-photo {
 img.comment-user-photo {
   width: 4vh;
   border-radius: 50%;
+}
+div.error-message {
+  color: red;
 }
 </style>
