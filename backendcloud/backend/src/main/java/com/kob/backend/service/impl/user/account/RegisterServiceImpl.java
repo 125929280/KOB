@@ -8,7 +8,7 @@ import com.kob.backend.pojo.Discuss;
 import com.kob.backend.pojo.User;
 import com.kob.backend.service.user.account.RegisterService;
 import com.kob.backend.utils.MailUtil;
-import com.kob.backend.utils.RedisKeyUtil;
+import com.kob.backend.utils.RedisUtil;
 import com.kob.backend.utils.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -49,7 +49,7 @@ public class RegisterServiceImpl implements RegisterService {
         String confirmedPassword = data.get("confirmedPassword");
         String email = data.get("email");
         String activationCode = data.get("activationCode");
-        String actualActivationCode = (String) redisTemplate.opsForValue().get(RedisKeyUtil.getActivationKey(username));
+        String actualActivationCode = (String) redisTemplate.opsForValue().get(RedisUtil.getActivationKey(username));
 
         Map<String, String> map = new HashMap<>();
         if (username == null) {
@@ -151,7 +151,7 @@ public class RegisterServiceImpl implements RegisterService {
             return map;
         }
 
-        redisTemplate.opsForValue().set(RedisKeyUtil.getActivationKey(username), activationCode, 60, TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set(RedisUtil.getActivationKey(username), activationCode, 60, TimeUnit.SECONDS);
 
         Context context = new Context();
         context.setVariable("username", username);

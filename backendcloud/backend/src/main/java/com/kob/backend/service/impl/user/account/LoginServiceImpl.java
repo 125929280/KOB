@@ -5,7 +5,7 @@ import com.google.code.kaptcha.impl.DefaultKaptcha;
 import com.kob.backend.service.impl.utils.UserDetailsImpl;
 import com.kob.backend.service.user.account.LoginService;
 import com.kob.backend.utils.JwtUtil;
-import com.kob.backend.utils.RedisKeyUtil;
+import com.kob.backend.utils.RedisUtil;
 import com.kob.backend.utils.WebUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -14,8 +14,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
@@ -55,11 +53,12 @@ public class LoginServiceImpl implements LoginService {
         String username = data.get("username");
         String password = data.get("password");
         String ip = WebUtil.getIpAddress();
-        String actualVerificationCode = (String) redisTemplate.opsForValue().get(RedisKeyUtil.getVerificationKey(ip));
-        System.out.println("[" + RedisKeyUtil.getVerificationKey(ip) + ", " + actualVerificationCode + "]");
+        String actualVerificationCode = (String) redisTemplate.opsForValue().get(RedisUtil.getVerificationKey(ip));
+        System.out.println("[" + RedisUtil.getVerificationKey(ip) + ", " + actualVerificationCode + "]");
         String verificationCode = data.get("verificationCode");
         System.out.println(username + " " + password + " " + actualVerificationCode + " " + verificationCode);
         Map<String, String> map = new HashMap<>();
+
         if (StringUtils.isBlank(actualVerificationCode) || StringUtils.isBlank(verificationCode) || !actualVerificationCode.equalsIgnoreCase(verificationCode)) {
             map.put("error_message", "验证码错误");
             return map;
@@ -75,7 +74,7 @@ public class LoginServiceImpl implements LoginService {
         String jwt = JwtUtil.createJWT(userId);
         map.put("token", jwt);
 
-        redisTemplate.opsForValue().set(RedisKeyUtil.getLoginKey(userId), principal);
+        redisTemplate.opsForValue().set(RedisUtil.getLoginKey(userId), principal, RedisUtil.LOGIN_TTL, TimeUnit.MINUTES);
         map.put("error_message", "success");
         return map;
     }
@@ -88,8 +87,8 @@ public class LoginServiceImpl implements LoginService {
             // 生成验证码字符串并保存到redis中
             String code = defaultKaptcha.createText();
             String ip = WebUtil.getIpAddress();
-            redisTemplate.opsForValue().set(RedisKeyUtil.getVerificationKey(ip), code, 60, TimeUnit.SECONDS);
-            System.out.println("[" + RedisKeyUtil.getVerificationKey(ip) + ", " + code + "]");
+            redisTemplate.opsForValue().set(RedisUtil.getVerificationKey(ip), code, 60, TimeUnit.SECONDS);
+            System.out.println("[" + RedisUtil.getVerificationKey(ip) + ", " + code + "]");
             BufferedImage challenge = defaultKaptcha.createImage(code);
             ImageIO.write(challenge, "jpg", imgOutputStream);
         } catch (IllegalArgumentException | IOException e) {
@@ -113,7 +112,7 @@ public class LoginServiceImpl implements LoginService {
         UserDetailsImpl principal = (UserDetailsImpl) usernamePasswordAuthenticationToken.getPrincipal();
         String userId = principal.getUser().getId().toString();
 
-        redisTemplate.delete("login:" + userId);
+        redisTemplate.delete(RedisUtil.getLoginKey(userId));
         map.put("error_message", "success");
         return map;
     }

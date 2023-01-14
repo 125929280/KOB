@@ -2,7 +2,7 @@ package com.kob.backend.config.filter;
 
 import com.kob.backend.service.impl.utils.UserDetailsImpl;
 import com.kob.backend.utils.JwtUtil;
-import com.kob.backend.utils.RedisKeyUtil;
+import com.kob.backend.utils.RedisUtil;
 import io.jsonwebtoken.Claims;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
@@ -30,19 +31,19 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
      * 从redis中获取用户信息
      * 存入SecurityContextHolder
      *
-     * @param request
-     * @param response
+     * @param httpServletRequest
+     * @param httpServletResponse
      * @param filterChain
      * @throws ServletException
      * @throws IOException
      */
     @Override
-    protected void doFilterInternal(HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull FilterChain filterChain) throws ServletException, IOException {
-        String token = request.getHeader("Authorization");
+    protected void doFilterInternal(HttpServletRequest httpServletRequest, @NotNull HttpServletResponse httpServletResponse, @NotNull FilterChain filterChain) throws ServletException, IOException {
+        String token = httpServletRequest.getHeader("Authorization");
 
         if (!StringUtils.hasText(token) || !token.startsWith("Bearer ")) {
             // 没有token，放行
-            filterChain.doFilter(request, response);
+            filterChain.doFilter(httpServletRequest, httpServletResponse);
             return;
         }
 
@@ -56,7 +57,8 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             throw new RuntimeException(e);
         }
 
-        UserDetailsImpl loginUser = (UserDetailsImpl) redisTemplate.opsForValue().get(RedisKeyUtil.getLoginKey(userid));
+        UserDetailsImpl loginUser = (UserDetailsImpl) redisTemplate.opsForValue().get(RedisUtil.getLoginKey(userid));
+        redisTemplate.expire(RedisUtil.getLoginKey(userid), RedisUtil.LOGIN_TTL, TimeUnit.MINUTES);
         if (Objects.isNull(loginUser)) {
             throw new RuntimeException("用户未登录");
         }
@@ -65,6 +67,6 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
-        filterChain.doFilter(request, response);
+        filterChain.doFilter(httpServletRequest, httpServletResponse);
     }
 }
