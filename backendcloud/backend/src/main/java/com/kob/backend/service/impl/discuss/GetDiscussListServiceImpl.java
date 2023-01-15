@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class GetDiscussListServiceImpl implements GetDiscussListService {
@@ -42,6 +43,22 @@ public class GetDiscussListServiceImpl implements GetDiscussListService {
         }
         resp.put("discusses", items);
         resp.put("discusses_count", discussMapper.selectCount(null));
+        return resp;
+    }
+
+    @Override
+    public JSONObject get(Map<String, String> data) {
+        Integer discussId = Integer.valueOf(data.get("discuss_id"));
+
+        QueryWrapper<Discuss> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("id", discussId);
+        Discuss discuss = discussMapper.selectOne(queryWrapper);
+        JSONObject resp = new JSONObject();
+        User user = userMapper.selectById(discuss.getUserId());
+        resp.put("photo", user.getPhoto());
+        resp.put("username", user.getUsername());
+        resp.put("type", discuss.getType().getDesc());
+        resp.put("discuss", discuss);
         return resp;
     }
 }

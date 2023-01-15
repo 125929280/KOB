@@ -1,10 +1,10 @@
 <template>
   <ContentField>
     <button
-      type="button"
-      class="btn btn-primary float-end"
-      data-bs-toggle="modal"
-      data-bs-target="#add-discuss-btn"
+        type="button"
+        class="btn btn-primary float-end"
+        data-bs-toggle="modal"
+        data-bs-target="#add-discuss-btn"
     >
       发表
     </button>
@@ -15,27 +15,27 @@
           <div class="modal-header">
             <h5 class="modal-title">发表讨论</h5>
             <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
             ></button>
           </div>
           <div class="modal-body">
             <div class="mb-3">
               <label for="add-discuss-title" class="form-label">名称</label>
               <input
-                v-model="discuss_add.title"
-                type="text"
-                class="form-control"
-                id="add-discuss-title"
-                placeholder="请输入讨论主题"
+                  v-model="discuss_add.title"
+                  type="text"
+                  class="form-control"
+                  id="add-discuss-title"
+                  placeholder="请输入讨论主题"
               />
             </div>
             <select
-              class="form-select"
-              aria-label="Default select example"
-              v-model="discuss_add.type"
+                class="form-select"
+                aria-label="Default select example"
+                v-model="discuss_add.type"
             >
               <option selected value="BLOG">分享</option>
               <option value="SOLUTION">题解</option>
@@ -45,11 +45,11 @@
             <div class="mb-3">
               <label for="add-discuss-content" class="form-label">内容</label>
               <textarea
-                v-model="discuss_add.content"
-                class="form-control"
-                id="add-discuss-content"
-                rows="15"
-                placeholder="请输入讨论内容"
+                  v-model="discuss_add.content"
+                  class="form-control"
+                  id="add-discuss-content"
+                  rows="15"
+                  placeholder="请输入讨论内容"
               ></textarea>
             </div>
           </div>
@@ -59,9 +59,9 @@
               发表
             </button>
             <button
-              type="button"
-              class="btn btn-secondary"
-              data-bs-dismiss="modal"
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
             >
               取消
             </button>
@@ -70,35 +70,42 @@
       </div>
     </div>
     <table
-      class="table table-striped table-hover"
-      style="text-align: center; table-layout: fixed"
+        class="table table-striped table-hover"
+        style="text-align: center; table-layout: fixed"
     >
       <thead>
-        <tr>
-          <th>类型</th>
-          <th>标题</th>
-          <th>作者</th>
-          <th>发表时间</th>
-        </tr>
+      <tr>
+        <th>类型</th>
+        <th>标题</th>
+        <th>作者</th>
+        <th>发表时间</th>
+      </tr>
       </thead>
       <tbody>
-        <tr v-for="discuss in discusses" :key="discuss.discuss.id">
-          <td>
-            {{ discuss.type }}
-          </td>
-          <td>
-            {{ discuss.discuss.title }}
-          </td>
-          <td>
-            <img :src="discuss.photo" alt="" class="discuss-user-photo" />
-            &nbsp;
-            <span class="discuss-user-username">{{ discuss.username }}</span>
-          </td>
-          <td>
-            {{ discuss.discuss.createTime }}
-          </td>
-          <td>
-            <button
+      <tr v-for="discuss in discusses" :key="discuss.discuss.id">
+        <td>
+          {{ discuss.type }}
+        </td>
+        <td>
+          <router-link
+              :to="{
+                name: 'discuss_content',
+                params: { discussId: discuss.discuss.id },
+              }"
+          >{{ discuss.discuss.title }}
+          </router-link
+          >
+        </td>
+        <td>
+          <img :src="discuss.photo" alt="" class="discuss-user-photo"/>
+          &nbsp;
+          <span class="discuss-user-username">{{ discuss.username }}</span>
+        </td>
+        <td>
+          {{ discuss.discuss.createTime }}
+        </td>
+        <td>
+          <button
               type="button"
               class="btn btn-primary"
               data-bs-toggle="modal"
@@ -106,173 +113,173 @@
               @click="
                 pull_comments_page(current_comments_page, discuss.discuss.id)
               "
-            >
-              查看
-            </button>
-            <!-- 查看讨论 Modal -->
-            <div
+          >
+            查看
+          </button>
+          <!-- 查看讨论 Modal -->
+          <div
               class="modal fade"
               :id="'open-discuss-btn-' + discuss.discuss.id"
               tabindex="-1"
-            >
-              <div class="modal-dialog modal-xl">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title">讨论</h5>
-                    <button
+          >
+            <div class="modal-dialog modal-xl">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">讨论</h5>
+                  <button
                       type="button"
                       class="btn-close"
                       data-bs-dismiss="modal"
                       aria-label="Close"
-                    ></button>
-                  </div>
-                  <div class="modal-body">
-                    <table
+                  ></button>
+                </div>
+                <div class="modal-body">
+                  <table
                       class="table"
                       style="text-align: center; table-layout: fixed"
+                  >
+                    <thead>
+                    <tr>
+                      <th>作者</th>
+                      <th>内容</th>
+                      <th>发表时间</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                      <td>
+                        <img
+                            :src="discuss.photo"
+                            alt=""
+                            class="discuss-user-photo"
+                        />
+                        &nbsp;
+                        <span class="discuss-user-username">{{
+                            discuss.username
+                          }}</span>
+                      </td>
+                      <td>
+                        {{ discuss.discuss.content }}
+                      </td>
+                      <td>
+                        {{ discuss.discuss.createTime }}
+                      </td>
+                    </tr>
+                    </tbody>
+                    <tbody>
+                    <tr
+                        v-for="comment in comments"
+                        :key="comment.comment.id"
                     >
-                      <thead>
-                        <tr>
-                          <th>作者</th>
-                          <th>内容</th>
-                          <th>发表时间</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td>
-                            <img
-                              :src="discuss.photo"
-                              alt=""
-                              class="discuss-user-photo"
-                            />
-                            &nbsp;
-                            <span class="discuss-user-username">{{
-                              discuss.username
-                            }}</span>
-                          </td>
-                          <td>
-                            {{ discuss.discuss.content }}
-                          </td>
-                          <td>
-                            {{ discuss.discuss.createTime }}
-                          </td>
-                        </tr>
-                      </tbody>
-                      <tbody>
-                        <tr
-                          v-for="comment in comments"
-                          :key="comment.comment.id"
-                        >
-                          <td>
-                            <img
-                              :src="comment.photo"
-                              alt=""
-                              class="comment-user-photo"
-                            />
-                            &nbsp;
-                            <span class="comment-user-username">{{
-                              comment.username
-                            }}</span>
-                          </td>
-                          <td>
-                            {{ comment.comment.content }}
-                          </td>
-                          <td>
-                            {{ comment.comment.createTime }}
-                          </td>
-                          <td>
-                            <button
-                              @click="
+                      <td>
+                        <img
+                            :src="comment.photo"
+                            alt=""
+                            class="comment-user-photo"
+                        />
+                        &nbsp;
+                        <span class="comment-user-username">{{
+                            comment.username
+                          }}</span>
+                      </td>
+                      <td>
+                        {{ comment.comment.content }}
+                      </td>
+                      <td>
+                        {{ comment.comment.createTime }}
+                      </td>
+                      <td>
+                        <button
+                            @click="
                                 remove_comment(
                                   comment.comment.id,
                                   discuss.discuss.id
                                 )
                               "
-                              type="button"
-                              class="btn btn-danger"
-                              v-if="
+                            type="button"
+                            class="btn btn-danger"
+                            v-if="
                                 parseInt(comment.comment.userId) ===
                                 parseInt($store.state.user.id)
                               "
-                            >
-                              删除
-                            </button>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                    <nav aria-label="...">
-                      <ul class="pagination" style="float: right">
-                        <li
+                        >
+                          删除
+                        </button>
+                      </td>
+                    </tr>
+                    </tbody>
+                  </table>
+                  <nav aria-label="...">
+                    <ul class="pagination" style="float: right">
+                      <li
                           class="page-item"
                           @click="click_comment_page(-2, discuss.discuss.id)"
-                        >
-                          <a class="page-link" href="#">前一页</a>
-                        </li>
-                        <li
+                      >
+                        <a class="page-link" href="#">前一页</a>
+                      </li>
+                      <li
                           :class="'page-item ' + page.is_active"
                           v-for="page in comment_pages"
                           :key="page.number"
                           @click="
                             click_comment_page(page.number, discuss.discuss.id)
                           "
-                        >
-                          <a class="page-link" href="#">{{ page.number }}</a>
-                        </li>
-                        <li
+                      >
+                        <a class="page-link" href="#">{{ page.number }}</a>
+                      </li>
+                      <li
                           class="page-item"
                           @click="click_comment_page(-1, discuss.discuss.id)"
-                        >
-                          <a class="page-link" href="#">后一页</a>
-                        </li>
-                      </ul>
-                    </nav>
-                    <div class="mb-3">
-                      <label
+                      >
+                        <a class="page-link" href="#">后一页</a>
+                      </li>
+                    </ul>
+                  </nav>
+                  <div class="mb-3">
+                    <label
                         for="add-comment-content"
                         class="form-label"
-                      ></label>
-                      <textarea
+                    ></label>
+                    <textarea
                         v-model="comment_add.content"
                         class="form-control"
                         id="add-comment-content"
                         rows="3"
                         placeholder="请输入评论内容"
-                      ></textarea>
-                    </div>
+                    ></textarea>
                   </div>
-                  <div class="modal-footer">
-                    <button
+                </div>
+                <div class="modal-footer">
+                  <button
                       type="button"
                       class="btn btn-primary"
                       @click="add_comment(discuss.discuss.id)"
-                    >
-                      发表评论
-                    </button>
-                    <button
+                  >
+                    发表评论
+                  </button>
+                  <button
                       type="button"
                       class="btn btn-secondary"
                       data-bs-dismiss="modal"
-                    >
-                      取消
-                    </button>
-                  </div>
+                  >
+                    取消
+                  </button>
                 </div>
               </div>
             </div>
-          </td>
-          <td>
-            <button
+          </div>
+        </td>
+        <td>
+          <button
               @click="remove_discuss(discuss.discuss.id)"
               type="button"
               class="btn btn-danger"
               v-if="discuss.discuss.userId === parseInt($store.state.user.id)"
-            >
-              删除
-            </button>
-          </td>
-        </tr>
+          >
+            删除
+          </button>
+        </td>
+      </tr>
       </tbody>
     </table>
 
@@ -282,10 +289,10 @@
           <a class="page-link" href="#">前一页</a>
         </li>
         <li
-          :class="'page-item ' + page.is_active"
-          v-for="page in discuss_pages"
-          :key="page.number"
-          @click="click_discuss_page(page.number)"
+            :class="'page-item ' + page.is_active"
+            v-for="page in pages"
+            :key="page.number"
+            @click="click_page(page.number)"
         >
           <a class="page-link" href="#">{{ page.number }}</a>
         </li>
@@ -298,21 +305,22 @@
 </template>
 <script>
 import ContentField from "../../components/ContentField.vue";
-import { useStore } from "vuex";
-import { Modal } from "bootstrap/dist/js/bootstrap";
-import { ref, reactive } from "vue";
+import {useStore} from "vuex";
+import {Modal} from "bootstrap/dist/js/bootstrap";
+import {ref, reactive} from "vue";
 import $ from "jquery";
+
 export default {
   components: {
     ContentField,
   },
   setup() {
     const store = useStore();
+    const discussUrl = ref("http://127.0.0.1:8081/user/discuss/");
     let discusses = ref([]);
-    let current_discuss_page = 1;
+    let current_page = 1;
     let total_discusses = 0;
-    let discuss_pages = ref([]);
-    console.log(total_discusses);
+    let pages = ref([]);
     const discuss_add = reactive({
       title: "",
       type: "BLOG",
@@ -320,35 +328,31 @@ export default {
       error_message: "",
     });
 
-    const update_discuss_pages = () => {
+    const update_pages = () => {
       let max_pages = parseInt(Math.ceil(total_discusses / 10));
       let new_pages = [];
-      for (
-        let i = current_discuss_page - 2;
-        i <= current_discuss_page + 2;
-        i++
-      ) {
+      for (let i = current_page - 2; i <= current_page + 2; i++) {
         if (i >= 1 && i <= max_pages) {
           new_pages.push({
             number: i,
-            is_active: i === current_discuss_page ? "active" : "",
+            is_active: i === current_page ? "active" : "",
           });
         }
       }
-      discuss_pages.value = new_pages;
+      pages.value = new_pages;
     };
 
-    const click_discuss_page = (page) => {
-      if (page === -2) page = current_discuss_page - 1;
-      else if (page === -1) page = current_discuss_page + 1;
+    const click_page = (page) => {
+      if (page === -2) page = current_page - 1;
+      else if (page === -1) page = current_page + 1;
       let max_pages = parseInt(Math.ceil(total_discusses / 10));
       if (page >= 1 && page <= max_pages) {
-        pull_discuss_page(page);
+        pull_page(page);
       }
     };
 
-    const pull_discuss_page = (page) => {
-      current_discuss_page = page;
+    const pull_page = (page) => {
+      current_page = page;
       $.ajax({
         url: "http://127.0.0.1:3000/user/discuss/getList/",
         data: {
@@ -362,14 +366,14 @@ export default {
           console.log(resp);
           discusses.value = resp.discusses;
           total_discusses = resp.discusses_count;
-          update_discuss_pages();
+          update_pages();
         },
         error(resp) {
           console.log(resp);
         },
       });
     };
-    pull_discuss_page(current_discuss_page);
+    pull_page(current_page);
 
     const add_discuss = () => {
       discuss_add.error_message = "";
@@ -390,7 +394,7 @@ export default {
             discuss_add.type = "BLOG";
             discuss_add.content = "";
             Modal.getInstance("#add-discuss-btn").hide();
-            pull_discuss_page(current_discuss_page);
+            pull_page(current_page);
           } else {
             discuss_add.error_message = resp.error_message;
           }
@@ -411,7 +415,7 @@ export default {
         success(resp) {
           console.log(resp);
           if (resp.error_message === "success") {
-            pull_discuss_page(current_discuss_page);
+            pull_page(current_page);
           }
         },
       });
@@ -421,7 +425,6 @@ export default {
     let current_comments_page = 1;
     let total_comments = 0;
     let comment_pages = ref([]);
-    console.log(total_comments);
     const comment_add = reactive({
       content: "",
       error_message: "",
@@ -439,9 +442,9 @@ export default {
         return;
       }
       for (
-        let i = current_comments_page - 2;
-        i <= current_comments_page + 2;
-        i++
+          let i = current_comments_page - 2;
+          i <= current_comments_page + 2;
+          i++
       ) {
         if (i >= 1 && i <= max_pages) {
           new_pages.push({
@@ -529,10 +532,11 @@ export default {
     };
 
     return {
+      discussUrl,
       discusses,
       discuss_add,
-      discuss_pages,
-      click_discuss_page,
+      pages,
+      click_page,
       add_discuss,
       remove_discuss,
       comments,
@@ -548,14 +552,20 @@ export default {
 };
 </script>
 <style scoped>
+a {
+  text-decoration: none;
+}
+
 img.discuss-user-photo {
   width: 4vh;
   border-radius: 50%;
 }
+
 img.comment-user-photo {
   width: 4vh;
   border-radius: 50%;
 }
+
 div.error-message {
   color: red;
 }

@@ -9,6 +9,7 @@ import UserAccountRegisterView from "../views/user/account/UserAccountRegisterVi
 import UserAccountLoginView from "../views/user/account/UserAccountLoginView";
 import DiscussIndexView from "../views/discuss/DiscussIndexView";
 import UserAccountSettingView from "../views/user/account/UserAccountSettingView";
+import DiscussContentView from "../views/discuss/DiscussContentView";
 import store from "../store";
 
 const routes = [
@@ -88,6 +89,14 @@ const routes = [
     path: "/discuss/",
     name: "discuss_index",
     component: DiscussIndexView,
+    meta: {
+      requestAuth: true,
+    },
+  },
+  {
+    path: "/discuss/:discussId",
+    name: "discuss_content",
+    component: DiscussContentView,
     meta: {
       requestAuth: true,
     },
