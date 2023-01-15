@@ -2,7 +2,7 @@ export default {
   state: {
     status: "matching", //matching or playing
     socket: null,
-    opponent_username: "zz",
+    opponent_username: "",
     opponent_photo: "",
     gameMap: null,
     a_id: 0,

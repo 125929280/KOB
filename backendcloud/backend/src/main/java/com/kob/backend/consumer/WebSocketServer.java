@@ -9,6 +9,7 @@ import com.kob.backend.mapper.UserMapper;
 import com.kob.backend.pojo.Bot;
 import com.kob.backend.pojo.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -19,29 +20,26 @@ import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.ExecutionException;
 
 @Component
 @ServerEndpoint("/websocket/{token}")  // 注意不要以'/'结尾
 public class WebSocketServer {
-
     private Session session = null;
-
     private User user;
-
+    // 全局WebSocket连接
     public static final ConcurrentHashMap<Integer, WebSocketServer> users = new ConcurrentHashMap<>();
-
     public static UserMapper userMapper;
-
     public static RecordMapper recordMapper;
-
     public static RestTemplate restTemplate;
     public static BotMapper botMapper;
-
     public Game game = null;
     private final static String addPlayerUrl = "http://127.0.0.1:3001/player/add/";
     private final static String removePlayerUrl = "http://127.0.0.1:3001/player/remove/";
+    private static ThreadPoolTaskExecutor applicationTaskExecutor;
 
     @Autowired
     public void setUserMapper(UserMapper userMapper) {
@@ -63,6 +61,11 @@ public class WebSocketServer {
         WebSocketServer.botMapper = botMapper;
     }
 
+    @Autowired
+    public void setApplicationTaskExecutor(ThreadPoolTaskExecutor applicationTaskExecutor) {
+        WebSocketServer.applicationTaskExecutor = applicationTaskExecutor;
+    }
+
     @OnOpen
     public void onOpen(Session session, @PathParam("token") String token) throws IOException {
         // 建立连接
@@ -80,14 +83,14 @@ public class WebSocketServer {
 
     @OnClose
     public void onClose() {
-        // 关闭链接
+        // 关闭连接
 //        System.out.println("disconnected!");
         if (this.user != null) {
             users.remove(this.user.getId());
         }
     }
 
-    public static void startGame(Integer aid, Integer aBotId, Integer bid, Integer bBotId) {
+    public static void startGame(Integer aid, Integer aBotId, Integer bid, Integer bBotId) throws ExecutionException, InterruptedException {
         User a = userMapper.selectById(aid), b = userMapper.selectById(bid);
         Bot botA = botMapper.selectById(aBotId), botB = botMapper.selectById(bBotId);
         Game game = new Game(13, 14, 20, a.getId(), botA, b.getId(), botB);
@@ -95,7 +98,8 @@ public class WebSocketServer {
         if (users.get(a.getId()) != null) users.get(a.getId()).game = game;
         if (users.get(b.getId()) != null) users.get(b.getId()).game = game;
 
-        game.start();
+//        game.start();
+        CompletableFuture.runAsync(game::start, applicationTaskExecutor);
 
         JSONObject respGame = new JSONObject();
         respGame.put("a_id", game.getPlayerA().getId());

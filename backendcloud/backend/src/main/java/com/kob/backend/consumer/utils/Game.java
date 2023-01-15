@@ -5,6 +5,7 @@ import com.kob.backend.consumer.WebSocketServer;
 import com.kob.backend.pojo.Bot;
 import com.kob.backend.pojo.Record;
 import com.kob.backend.pojo.User;
+import lombok.Data;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -14,7 +15,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class Game extends Thread {
+@Data
+public class Game {
     private final Integer rows;
     private final Integer cols;
     private final Integer inner_walls_count;
@@ -45,18 +47,6 @@ public class Game extends Thread {
         }
         playerA = new Player(idA, botIdA, botCodeA, this.rows - 2, 1, new ArrayList<>());
         playerB = new Player(idB, botIdB, botCodeB, 1, this.cols - 2, new ArrayList<>());
-    }
-
-    public int[][] getG() {
-        return g;
-    }
-
-    public Player getPlayerA() {
-        return playerA;
-    }
-
-    public Player getPlayerB() {
-        return playerB;
     }
 
     public void setNextStepA(Integer nextStepA) {
@@ -308,8 +298,8 @@ public class Game extends Thread {
         sendAllMessage(resp.toJSONString());
     }
 
-    @Override
-    public void run() {
+    public void start() {
+        System.out.println(Thread.currentThread().getName());
         for (int i = 0; i < 1000; i++) {
             if (nextStep()) {
                 judge();
