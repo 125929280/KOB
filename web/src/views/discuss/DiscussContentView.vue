@@ -120,10 +120,7 @@ export default {
     });
 
     $.ajax({
-      url: "http://127.0.0.1:3000/user/discuss/get/",
-      data: {
-        discuss_id: discussId,
-      },
+      url: "http://127.0.0.1:3000/discuss/" + "discussId/" + discussId,
       type: "get",
       headers: {
         Authorization: "Bearer " + store.state.user.token,
@@ -162,11 +159,7 @@ export default {
     const pull_page = (page) => {
       current_page = page;
       $.ajax({
-        url: "http://127.0.0.1:3000/user/comment/getList/",
-        data: {
-          page: page,
-          discuss_id: discussId,
-        },
+        url: "http://127.0.0.1:3000/comment/" + "page/" + page + "/discussId/" + discussId,
         type: "get",
         headers: {
           Authorization: "Bearer " + store.state.user.token,
@@ -187,7 +180,7 @@ export default {
     const add_comment = () => {
       comment_add.error_message = "";
       $.ajax({
-        url: "http://127.0.0.1:3000/user/comment/add/",
+        url: "http://127.0.0.1:3000/comment/",
         type: "post",
         data: {
           discuss_id: discussId,
@@ -209,8 +202,8 @@ export default {
 
     const remove_comment = (commentId) => {
       $.ajax({
-        url: "http://127.0.0.1:3000/user/comment/remove/",
-        type: "post",
+        url: "http://127.0.0.1:3000/comment/",
+        type: "delete",
         data: {
           comment_id: commentId,
         },

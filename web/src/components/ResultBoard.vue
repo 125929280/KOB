@@ -4,8 +4,8 @@
       Draw
     </div>
     <div
-      class="result-board-text"
-      v-else-if="
+        class="result-board-text"
+        v-else-if="
         $store.state.pk.loser === 'a' &&
         $store.state.pk.a_id == parseInt($store.state.user.id)
         // 不能用=== 因为类型不一样
@@ -14,8 +14,8 @@
       Lose
     </div>
     <div
-      class="result-board-text"
-      v-else-if="
+        class="result-board-text"
+        v-else-if="
         $store.state.pk.loser === 'b' &&
         $store.state.pk.b_id === parseInt($store.state.user.id)
       "
@@ -31,7 +31,7 @@
   </div>
 </template>
 <script>
-import { useStore } from "vuex";
+import {useStore} from "vuex";
 
 export default {
   setup() {
@@ -42,8 +42,7 @@ export default {
       store.commit("updateLoser", "none");
       store.commit("updateOpponent", {
         username: "我的对手",
-        photo:
-          "https://cdn.acwing.com/media/article/image/2022/08/09/1_1db2488f17-anonymous.png",
+        photo: "http://127.0.0.1:3000/anonymous.png",
       });
     };
 
@@ -62,6 +61,7 @@ div.result-board {
   top: 30vh;
   left: 35vw;
 }
+
 div.result-board-text {
   text-align: center;
   color: white;
@@ -70,6 +70,7 @@ div.result-board-text {
   font-style: italic;
   padding-top: 5vh;
 }
+
 div.result-board-btn {
   text-align: center;
   padding-top: 7vh;

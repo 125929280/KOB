@@ -316,7 +316,6 @@ export default {
   },
   setup() {
     const store = useStore();
-    const discussUrl = ref("http://127.0.0.1:8081/user/discuss/");
     let discusses = ref([]);
     let current_page = 1;
     let total_discusses = 0;
@@ -354,7 +353,7 @@ export default {
     const pull_page = (page) => {
       current_page = page;
       $.ajax({
-        url: "http://127.0.0.1:3000/user/discuss/getList/",
+        url: "http://127.0.0.1:3000/discuss/",
         data: {
           page,
         },
@@ -378,7 +377,7 @@ export default {
     const add_discuss = () => {
       discuss_add.error_message = "";
       $.ajax({
-        url: "http://127.0.0.1:3000/user/discuss/add/",
+        url: "http://127.0.0.1:3000/discuss/",
         type: "post",
         data: {
           title: discuss_add.title,
@@ -404,8 +403,8 @@ export default {
 
     const remove_discuss = (discussId) => {
       $.ajax({
-        url: "http://127.0.0.1:3000/user/discuss/remove/",
-        type: "post",
+        url: "http://127.0.0.1:3000/discuss/",
+        type: "delete",
         data: {
           discuss_id: discussId,
         },
@@ -532,7 +531,6 @@ export default {
     };
 
     return {
-      discussUrl,
       discusses,
       discuss_add,
       pages,
