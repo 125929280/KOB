@@ -90,7 +90,7 @@ public class WebSocketServer {
         }
     }
 
-    public static void startGame(Integer aid, Integer aBotId, Integer bid, Integer bBotId) throws ExecutionException, InterruptedException {
+    public static void startGame(Integer aid, Integer aBotId, Integer bid, Integer bBotId) {
         User a = userMapper.selectById(aid), b = userMapper.selectById(bid);
         Bot botA = botMapper.selectById(aBotId), botB = botMapper.selectById(bBotId);
         Game game = new Game(13, 14, 20, a.getId(), botA, b.getId(), botB);

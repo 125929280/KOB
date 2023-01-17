@@ -26,7 +26,7 @@ public class Game {
     private Integer nextStepA = null;
     private Integer nextStepB = null;
     private ReentrantLock lock = new ReentrantLock();
-    private String status = "playing"; // playing->finished
+    private String status = "playing"; // playing -> finished
     private String loser = ""; // "all" or "a" or "b"
     private final static String addBoturl = "http://127.0.0.1:3002/bot/add/";
 
@@ -85,6 +85,11 @@ public class Game {
         return false;
     }
 
+    /**
+     * 创建地图，填入障碍物，并检查连通性
+     *
+     * @return
+     */
     private boolean draw() {
         for (int i = 0; i < this.rows; i++) {
             for (int j = 0; j < this.cols; j++) {
@@ -156,10 +161,15 @@ public class Game {
         WebSocketServer.restTemplate.postForObject(addBoturl, data, String.class);
     }
 
+    /**
+     * 等待两名玩家的下一步操作
+     *
+     * @return
+     */
     private boolean nextStep() {
-        // 等待两名玩家的下一步操作
         try {
-            // 每秒走五格
+            // 前端设定 每秒走五格
+            // 至少先等200ms 再去获取下一步，否则会丢失大量操作
             Thread.sleep(200);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
@@ -207,8 +217,10 @@ public class Game {
         return true;
     }
 
+    /**
+     * 判断两名玩家下一步操作是否合法
+     */
     private void judge() {
-        // 判断两名玩家下一步操作是否合法
         List<Cell> cellsA = playerA.getCells();
         List<Cell> cellsB = playerB.getCells();
 
@@ -227,6 +239,11 @@ public class Game {
         }
     }
 
+    /**
+     * 广播信息
+     *
+     * @param message
+     */
     private void sendAllMessage(String message) {
         if (WebSocketServer.users.get(playerA.getId()) != null)
             WebSocketServer.users.get(playerA.getId()).sendMessage(message);
@@ -234,8 +251,10 @@ public class Game {
             WebSocketServer.users.get(playerB.getId()).sendMessage(message);
     }
 
+    /**
+     * 向两个Client传递移动信息
+     */
     private void sendMove() {
-        // 向两个Client传递移动信息
         lock.lock();
         try {
             JSONObject resp = new JSONObject();
@@ -289,8 +308,10 @@ public class Game {
         WebSocketServer.recordMapper.insert(record);
     }
 
+    /**
+     * 向两个Client广播结果
+     */
     private void sendResult() {
-        // 向两个Client广播结果
         JSONObject resp = new JSONObject();
         resp.put("event", "result");
         resp.put("loser", loser);
