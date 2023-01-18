@@ -25,4 +25,5 @@ public class Discuss {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private Date modifyTime;
     private Integer score;
+    private Integer likeCount;
 }

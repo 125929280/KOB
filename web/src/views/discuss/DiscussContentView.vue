@@ -3,24 +3,28 @@
     <div class="row">
       <h2 class="style margin-top:10px">{{ discuss.discuss.title }}</h2>
       <div class="row">
-        <div class="col-3">
+<!--        <div class="col-3">-->
           <div class="card" style="margin-top: 20px">
             <div class="card-body">
-              <img :src="discuss.photo" alt="" class="discuss-user-photo"/>
-              &nbsp;
-              <span class="discuss-user-username">{{ discuss.username }}</span>
+              <div class="col-3"><img :src="discuss.photo" alt="" class="discuss-user-photo"/>
+                &nbsp;
+                <span class="discuss-user-username">{{ discuss.username }}</span></div>
+
+              <div class="col-9">
+                <span class="discuss-user-username">{{
+                    discuss.discuss.content
+                  }}</span>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="col-9">
-          <div class="card" style="margin-top: 20px">
-            <div class="card-body">
-              <span class="discuss-user-username">{{
-                  discuss.discuss.content
-                }}</span>
-            </div>
-          </div>
-        </div>
+<!--        </div>-->
+<!--        <div class="col-9">-->
+<!--          <div class="card" style="margin-top: 20px">-->
+<!--            <div class="card-body">-->
+<!--              -->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
       </div>
       <table class="table" style="text-align: center; table-layout: fixed">
         <thead>

@@ -9,6 +9,7 @@ import com.kob.backend.mapper.UserMapper;
 import com.kob.backend.pojo.Bot;
 import com.kob.backend.pojo.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
@@ -72,6 +73,10 @@ public class WebSocketServer {
         this.session = session;
 //        System.out.println("connected!");
         Integer userId = JwtAuthentication.getUserId(token);
+        if(!users.containsKey(0)) {
+            this.user = userMapper.selectById(0);
+            users.put(0, this);
+        }
         this.user = userMapper.selectById(userId);
         if (this.user != null) {
             users.put(userId, this);

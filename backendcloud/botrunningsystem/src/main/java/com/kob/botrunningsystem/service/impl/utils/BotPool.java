@@ -31,6 +31,7 @@ public class BotPool extends Thread {
             lock.lock();
             if (bots.isEmpty()) {
                 try {
+                    // await方法自动释放锁
                     condition.await();
                 } catch (InterruptedException e) {
                     e.printStackTrace();

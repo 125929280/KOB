@@ -68,6 +68,13 @@ public class MatchingPool extends Thread {
     }
 
     private void matchPlayers() {
+        System.out.println(players.size() + " " + (players.isEmpty() ? "" : players.get(0).getWaitingTime().toString()));
+        if(players.size() == 1 && players.get(0).getWaitingTime() >= 0) {
+            System.out.println("yes");
+            sendResult(new Player(0, 0, 0, 0), players.get(0));
+            players.clear();
+            return ;
+        }
         boolean[] used = new boolean[players.size()];
         for (int i = 0; i < players.size(); i++) {
             if (used[i]) continue;

@@ -9,6 +9,7 @@ import com.kob.backend.mapper.DiscussMapper;
 import com.kob.backend.mapper.UserMapper;
 import com.kob.backend.pojo.Discuss;
 import com.kob.backend.pojo.User;
+import com.kob.backend.service.action.LikeService;
 import com.kob.backend.service.discuss.DiscussService;
 import com.kob.backend.service.impl.utils.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,12 +27,14 @@ public class DiscussServiceImpl implements DiscussService {
     @Autowired
     private UserMapper userMapper;
 
+    @Autowired
+    private LikeService likeService;
+
     @Override
     public Map<String, String> add(Map<String, String> data) {
         UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
         UserDetailsImpl principal = (UserDetailsImpl) authentication.getPrincipal();
         User user = principal.getUser();
-
 
         String title = data.get("title");
         DiscussType type = DiscussType.valueOf(data.get("type"));
@@ -56,7 +59,7 @@ public class DiscussServiceImpl implements DiscussService {
         }
 
         Date now = new Date();
-        Discuss discuss = new Discuss(null, user.getId(), title, type, content, now, now, 1500);
+        Discuss discuss = new Discuss(null, user.getId(), title, type, content, now, now, 1500, 0);
 
         discussMapper.insert(discuss);
         map.put("error_message", "success");
@@ -126,7 +129,7 @@ public class DiscussServiceImpl implements DiscussService {
             return map;
         }
 
-        Discuss new_discuss = new Discuss(discuss.getId(), user.getId(), title, type, content, discuss.getCreateTime(), new Date(), 1500);
+        Discuss new_discuss = new Discuss(discuss.getId(), user.getId(), title, type, content, discuss.getCreateTime(), new Date(), 1500, 0);
         discussMapper.updateById(new_discuss);
         map.put("error_message", "success");
         return map;
@@ -136,7 +139,7 @@ public class DiscussServiceImpl implements DiscussService {
     public JSONObject getList(Integer page) {
         IPage<Discuss> discussIPage = new Page<>(page, 10);
         QueryWrapper<Discuss> queryWrapper = new QueryWrapper<>();
-        queryWrapper.orderByDesc("id");
+        queryWrapper.orderByDesc("score");
         List<Discuss> discusses = discussMapper.selectPage(discussIPage, queryWrapper).getRecords();
 
         JSONObject resp = new JSONObject();
@@ -148,6 +151,7 @@ public class DiscussServiceImpl implements DiscussService {
             item.put("username", user.getUsername());
             item.put("type", discuss.getType().getDesc());
             item.put("discuss", discuss);
+            item.put("isLiked", likeService.getLikeStatus(discuss.getId()));
             items.add(item);
         }
         resp.put("discusses", items);
@@ -166,6 +170,7 @@ public class DiscussServiceImpl implements DiscussService {
         resp.put("username", user.getUsername());
         resp.put("type", discuss.getType().getDesc());
         resp.put("discuss", discuss);
+        resp.put("isLiked", likeService.getLikeStatus(discuss.getId()));
         return resp;
     }
 }

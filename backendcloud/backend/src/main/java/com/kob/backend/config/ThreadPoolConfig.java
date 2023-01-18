@@ -15,7 +15,7 @@ public class ThreadPoolConfig {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(5);
         executor.setMaxPoolSize(20);
-        executor.setQueueCapacity(Integer.MAX_VALUE);
+        executor.setQueueCapacity(10);
         executor.setKeepAliveSeconds(60);
         executor.setThreadNamePrefix("backend threadPool: ");
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());

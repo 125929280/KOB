@@ -120,7 +120,7 @@ public class RegisterServiceImpl implements RegisterService {
         User user = new User(null, username, encodedPassword, photo, 1500, email, now, now);
         userMapper.insert(user);
 
-        Discuss discuss = new Discuss(null, user.getId(), "新人报道", DiscussType.CHAT, "Hello", now, now, 1500);
+        Discuss discuss = new Discuss(null, user.getId(), "新人报道", DiscussType.CHAT, "Hello", now, now, 1500, 0);
         discussMapper.insert(discuss);
         map.put("error_message", "success");
         return map;

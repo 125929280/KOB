@@ -22,13 +22,7 @@ public class RedisUtil {
         return PREFIX_LOGIN + SPLIT + userId;
     }
 
-    /**
-     * like:entityType:entityId -> set(userId)
-     * @param entityType
-     * @param entityId
-     * @return
-     */
-    public static String getEntityLike(int entityType, int entityId) {
-        return PREFIX_LIKE + SPLIT + entityType + SPLIT + entityId;
+    public static String getLikeKey(int discussId) {
+        return PREFIX_LIKE + SPLIT + discussId;
     }
 }

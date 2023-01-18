@@ -95,6 +95,8 @@
           >{{ discuss.discuss.title }}
           </router-link
           >
+          &nbsp;&nbsp;&nbsp;&nbsp;
+          <span>{{ discuss.discuss.likeCount }}</span>
         </td>
         <td>
           <img :src="discuss.photo" alt="" class="discuss-user-photo"/>
@@ -279,6 +281,24 @@
             删除
           </button>
         </td>
+        <td>
+          <button
+              @click="like(discuss.discuss.id)"
+              type="button"
+              class="btn btn-danger"
+              v-if="parseInt(discuss.isLiked) === 0"
+          >
+            点赞
+          </button>
+          <button
+              @click="like(discuss.discuss.id)"
+              type="button"
+              class="btn btn-danger"
+              v-else
+          >
+            取消点赞
+          </button>
+        </td>
       </tr>
       </tbody>
     </table>
@@ -320,6 +340,7 @@ export default {
     let current_page = 1;
     let total_discusses = 0;
     let pages = ref([]);
+    let like_btn_info = ref("点赞");
     const discuss_add = reactive({
       title: "",
       type: "BLOG",
@@ -414,6 +435,30 @@ export default {
         success(resp) {
           console.log(resp);
           if (resp.error_message === "success") {
+            pull_page(current_page);
+          }
+        },
+      });
+    };
+
+    const like = (discussId) => {
+      $.ajax({
+        url: "http://127.0.0.1:3000/like/",
+        type: "put",
+        data: {
+          discuss_id: discussId,
+        },
+        headers: {
+          Authorization: "Bearer " + store.state.user.token,
+        },
+        success(resp) {
+          console.log(resp);
+          if (resp.error_message === "success") {
+            if(like_btn_info.value === "点赞") {
+              like_btn_info.value = "取消点赞";
+            } else {
+              like_btn_info.value = "点赞"
+            }
             pull_page(current_page);
           }
         },
@@ -534,9 +579,11 @@ export default {
       discusses,
       discuss_add,
       pages,
+      like_btn_info,
       click_page,
       add_discuss,
       remove_discuss,
+      like,
       comments,
       comment_add,
       current_comments_page,
