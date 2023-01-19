@@ -45,8 +45,8 @@ public class Game {
             botIdB = botB.getId();
             botCodeB = botB.getContent();
         }
-        playerA = new Player(idA, botIdA, botCodeA, this.rows - 2, 1, new ArrayList<>());
-        playerB = new Player(idB, botIdB, botCodeB, 1, this.cols - 2, new ArrayList<>());
+        playerA = new Player(idA, botIdA, botCodeA, this.rows - 2, 1, new ArrayList<>(), idB);
+        playerB = new Player(idB, botIdB, botCodeB, 1, this.cols - 2, new ArrayList<>(), idA);
     }
 
     public void setNextStepA(Integer nextStepA) {
@@ -158,6 +158,7 @@ public class Game {
         data.add("user_id", player.getId().toString());
         data.add("bot_code", player.getBotCode());
         data.add("input", getInput(player));
+        data.add("opponent_id", player.getOpponentId().toString());
         WebSocketServer.restTemplate.postForObject(addBoturl, data, String.class);
     }
 

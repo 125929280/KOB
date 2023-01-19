@@ -17,6 +17,7 @@ public class Player {
     private Integer sx;
     private Integer sy;
     private List<Integer> steps;
+    private Integer opponentId;
 
     private boolean check_tail_increasing(int step) {
         if (step <= 10) return true;

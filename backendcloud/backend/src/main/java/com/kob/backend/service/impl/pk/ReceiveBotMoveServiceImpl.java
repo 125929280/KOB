@@ -9,10 +9,15 @@ import org.springframework.stereotype.Service;
 @Service
 public class ReceiveBotMoveServiceImpl implements ReceiveBotMoveService {
     @Override
-    public String receiveBotMove(Integer userId, Integer direction) {
+    public String receiveBotMove(Integer userId, Integer direction, Integer opponentId) {
         System.out.println("receive bot move: " + userId + " " + direction);
-        if (ObjectUtil.isNotNull(WebSocketServer.users.get(userId))) {
-            Game game = WebSocketServer.users.get(userId).game;
+        if (ObjectUtil.isNotNull(WebSocketServer.users.get(userId)) || userId.equals(0)) {
+            Game game = null;
+            if(userId.equals(0)) {
+                game = WebSocketServer.users.get(opponentId).game;
+            } else {
+                game = WebSocketServer.users.get(userId).game;
+            }
             if (ObjectUtil.isNotNull(game)) {
                 if (game.getPlayerA().getId().equals(userId)) {
                     game.setNextStepA(direction);
