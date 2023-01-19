@@ -120,7 +120,7 @@ public class WebSocketServer {
         respA.put("opponent_username", b.getUsername());
         respA.put("opponent_photo", b.getPhoto());
         respA.put("game", respGame);
-        if (users.get(a.getId()) != null) users.get(a.getId()).sendMessage(respA.toJSONString());
+        if (users.get(a.getId()) != null && !a.getId().equals(0)) users.get(a.getId()).sendMessage(respA.toJSONString());
 
         JSONObject respB = new JSONObject();
         respB.put("event", "start-matching");

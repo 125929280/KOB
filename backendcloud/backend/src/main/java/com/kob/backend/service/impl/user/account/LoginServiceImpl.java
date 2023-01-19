@@ -111,7 +111,6 @@ public class LoginServiceImpl implements LoginService {
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
         UserDetailsImpl principal = (UserDetailsImpl) usernamePasswordAuthenticationToken.getPrincipal();
         String userId = principal.getUser().getId().toString();
-
         redisTemplate.delete(RedisUtil.getLoginKey(userId));
         map.put("error_message", "success");
         return map;
