@@ -181,6 +181,7 @@ public class WebSocketServer {
     public void sendMessage(String message) {
         synchronized (this.session) {
             try {
+                System.out.println("message: " + message);
                 this.session.getBasicRemote().sendText(message);
             } catch (IOException e) {
                 e.printStackTrace();

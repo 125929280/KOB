@@ -7,13 +7,13 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class BotPool extends Thread {
-    private final ReentrantLock lock = new ReentrantLock();
+//    private final ReentrantLock lock = new ReentrantLock();
 //    private final Condition condition = lock.newCondition();
 //    private final Queue<Bot> bots = new LinkedList<>();
     private final ArrayBlockingQueue<Bot> bots = new ArrayBlockingQueue<>(100);
 
     public void addBot(Integer userId, String botCode, String input, Integer opponentId) {
-        lock.lock();
+//        lock.lock();
         try {
 //            bots.add(new Bot(userId, botCode, input, opponentId));
             bots.put(new Bot(userId, botCode, input, opponentId));
@@ -21,7 +21,7 @@ public class BotPool extends Thread {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         } finally {
-            lock.unlock();
+//            lock.unlock();
         }
     }
 

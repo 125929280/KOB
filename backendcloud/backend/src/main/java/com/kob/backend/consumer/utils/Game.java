@@ -246,7 +246,7 @@ public class Game {
      * @param message
      */
     private void sendAllMessage(String message) {
-        if (WebSocketServer.users.get(playerA.getId()) != null)
+        if (WebSocketServer.users.get(playerA.getId()) != null && !playerA.getId().equals(0))
             WebSocketServer.users.get(playerA.getId()).sendMessage(message);
         if (WebSocketServer.users.get(playerB.getId()) != null)
             WebSocketServer.users.get(playerB.getId()).sendMessage(message);
