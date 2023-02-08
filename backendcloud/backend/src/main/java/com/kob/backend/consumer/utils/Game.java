@@ -1,11 +1,16 @@
 package com.kob.backend.consumer.utils;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.kob.backend.consumer.WebSocketServer;
 import com.kob.backend.pojo.Bot;
 import com.kob.backend.pojo.Record;
 import com.kob.backend.pojo.User;
 import lombok.Data;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -29,6 +34,8 @@ public class Game {
     private String status = "playing"; // playing -> finished
     private String loser = ""; // "all" or "a" or "b"
     private final static String addBoturl = "http://127.0.0.1:3002/bot/add/";
+    @Autowired
+    private KafkaTemplate kafkaTemplate;
 
     public Game(Integer rows, Integer cols, Integer inner_walls_count, Integer idA, Bot botA, Integer idB, Bot botB) {
         this.rows = rows;
@@ -160,6 +167,11 @@ public class Game {
         data.add("input", getInput(player));
         data.add("opponent_id", player.getOpponentId().toString());
         WebSocketServer.restTemplate.postForObject(addBoturl, data, String.class);
+    }
+
+    @KafkaListener(topics = {"add"})
+    public void handleMessage(ConsumerRecord record) {
+        System.out.println(record.value());
     }
 
     /**

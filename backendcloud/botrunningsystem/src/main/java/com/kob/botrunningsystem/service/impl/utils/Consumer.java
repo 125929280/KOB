@@ -1,8 +1,12 @@
 package com.kob.botrunningsystem.service.impl.utils;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.kob.botrunningsystem.utils.StringUtil;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.joor.Reflect;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -22,6 +26,13 @@ public class Consumer extends Thread {
     @Autowired
     public void setRestTemplate(RestTemplate restTemplate) {
         Consumer.restTemplate = restTemplate;
+    }
+
+    @KafkaListener(topics = {"addBot"})
+    public void handleMessage(ConsumerRecord record) {
+        Consumer consumer = new Consumer();
+        Bot bot = JSONObject.parseObject(record.value().toString(), Bot.class);
+        consumer.startTimeout(2000L, bot);
     }
 
     public void startTimeout(long timeout, Bot bot) {
